@@ -1,4 +1,4 @@
-module CarSS
+module github.com/onion0904/app
 
 go 1.22.3
 
