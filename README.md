@@ -1,5 +1,10 @@
 # CarShareSystem
 
+## 目的
+- CleanArchitectureを学ぶ
+- GraphQLとSQLboilerを使ってみる
+- 友達と車をシェアしたい
+
 ## ユーザー登録
 - サインイン(auth)
     -メールアドレス
@@ -47,13 +52,15 @@
 ## ディレクトリの説明
 
 ```
-.
-├── cmd # アプリケーションのスタート地点 (main.go等)
-├── config # 各種設定値
-├── docs # APIドキュメント (例: Swagger)
-├── domain # ビジネスロジックの中核 、各種ドメインオブジェクト
-├── infrastructure # データベースや外部APIへの実装詳細
-├── presentation # ユーザーへの表⽰や⼊⼒ (HTTP等)
-├── server # HTTPサーバーの設定やルーティング
-└── usecase # ユースケース
+├──app # アプリケーションコード
+|   ├── cmd # アプリケーションのスタート地点 (main.go等)
+|   ├── config # 各種設定値
+|    ├── docs # APIドキュメント
+|    ├── domain # ビジネスロジックの中核 、各種ドメインオブジェクト
+|    ├── infrastructure # データベースや外部APIへの実装詳細
+|    ├── presentation # ユーザーへの表⽰や⼊⼒ (HTTP等)
+|    ├── server # HTTPサーバーの設定やルーティング
+|    └── usecase # ユースケース
+├── ops # 各種環境周りに関するファイル
+└── pkg # ドメインロジックをもたない汎⽤的な処理
 ```
