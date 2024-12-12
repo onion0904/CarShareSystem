@@ -10,10 +10,10 @@ import (
 
 type User struct {
 	id string
-	email string
 	lastName string
 	firstName string
-	emailAddress string
+	email string
+	icon string
 }
 
 func Reconstruct(
@@ -21,25 +21,29 @@ func Reconstruct(
     lastName string,
     firstName string,
     email string,
+	icon string,
 ) (*User, error) {
 	return newUser(
 		id,
         lastName,
         firstName,
         email,
+		icon,
 	)
 }
 
 func NewUser(
-	email string,
 	lastName string,
 	firstName string,
+	email string,
+	icon string,
 ) (*User, error) {
 	return newUser(
 		ulid.NewUlid(),
 		lastName,
 		firstName,
 		email,
+		icon,
 	)
 }
 
@@ -48,6 +52,7 @@ func newUser(
     lastName string,
     firstName string,
     email string,
+	icon string,
 ) (*User, error) {
 	// 名前のバリデーション
 	if utf8.RuneCountInString(lastName) < nameLengthMin || utf8.RuneCountInString(lastName) > nameLengthMax {
@@ -67,15 +72,12 @@ func newUser(
         lastName:     lastName,
         firstName:    firstName,
         email:        email,
+		icon:         icon,
     }, nil
 }
 
 func (u *User) ID() string {
 	return u.id
-}
-
-func (u *User) Email() string {
-	return u.email
 }
 
 func (u *User) LastName() string {
@@ -84,6 +86,14 @@ func (u *User) LastName() string {
 
 func (u *User) FirstName() string {
 	return u.firstName
+}
+
+func (u *User) Email() string {
+	return u.email
+}
+
+func (u *User) Icon() string {
+	return u.icon
 }
 
 const (
