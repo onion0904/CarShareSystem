@@ -10,38 +10,38 @@ import (
 type Group struct {
 	id string
 	name string
-	membersID []string
+	usersID []string
 }
 
 
 func Reconstruct(
 	id string,
 	name string,
-	membersID []string,
+	usersID []string,
 ) (*Group, error) {
 	return newGroup(
 		id,
 		name,
-		membersID,
+		usersID,
 	)
 }
 
 func NewProduct(
 	id string,
 	name string,
-	membersID []string,
+	usersID []string,
 ) (*Group, error) {
 	return newGroup(
 		ulid.NewUlid(),
 		name,
-		membersID,
+		usersID,
 	)
 }
 
 func newGroup(
 	id string,
 	name string,
-	membersID []string,
+	usersID []string,
 ) (*Group, error) {
 	// ownerIDのバリデーション
 	if !ulid.IsValid(id) {
@@ -55,7 +55,7 @@ func newGroup(
 	return &Group{
 		id:          id,
 		name:        name,
-		membersID:   membersID,
+		usersID:   usersID,
 	}, nil
 }
 
@@ -68,7 +68,7 @@ func (p *Group) Name() string {
 }
 
 func (p *Group) MemebersID() []string {
-	return p.membersID
+	return p.usersID
 }
 
 

@@ -3,10 +3,10 @@ package user
 import "context"
 
 type UserRepository interface {
-	//ユーザーの保存
     Save(ctx context.Context, user *User) error
-	//IDでユーザーを取得
-    FindById(ctx context.Context, id string) (*User, error)
-	//IDでユーザーを削除
+    FindUser(ctx context.Context, id string) (*User, error)
+	FindUserName(ctx context.Context, id string) (string, error)
+    FindUserIcon(ctx context.Context, id string) (string, error)
 	Delete(ctx context.Context, id string) error
+    ExistUser(email string, password string) bool
 }
