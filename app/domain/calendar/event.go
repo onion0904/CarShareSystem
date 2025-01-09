@@ -19,6 +19,8 @@ type Event struct {
 	month int
 	day int
 	date time.Time
+	startDate time.Time
+	endDate time.Time
 	important bool
 }
 
@@ -31,6 +33,8 @@ func Reconstruct(
 	month int,
 	day int,
 	date time.Time,
+	startDate time.Time,
+	endDate time.Time,
 	important bool,
 ) (*Event, error) {
 	return newEvent(
@@ -42,19 +46,16 @@ func Reconstruct(
         month,
 		day,
 		date,
+		startDate,
+		endDate,
 		important,
 	)
 }
 
 func NewEvent(
-	id string,
 	usersID string,
 	together bool,
 	description string,
-	year int,
-    month int,
-	day int,
-	date time.Time,
 	important bool,
 ) (*Event, error) {
 	return newEvent(
@@ -66,6 +67,8 @@ func NewEvent(
         pkgTime.Month(),
 		pkgTime.Day(),
 		pkgTime.Now(),
+		pkgTime.NextStartWeek(),
+		pkgTime.NextEndWeek(),
 		important,
 	)
 }
@@ -79,6 +82,8 @@ func newEvent(
     month int,
 	day int,
 	date time.Time,
+	startDate time.Time,
+    endDate time.Time,
 	important bool,
 ) (*Event, error) {
 	// ownerIDのバリデーション
@@ -104,6 +109,8 @@ func newEvent(
         month:        month,
 		day:         day,
 		date:         date,
+		startDate:  startDate,
+        endDate:    endDate,
 		important: important,
 	}, nil
 }
@@ -134,6 +141,18 @@ func (c *Event) Month() int {
 
 func (c *Event) Day() int {
     return c.day
+}
+
+func (c *Event) Date() time.Time {
+    return c.date
+}
+
+func (c *Event) StartDate() time.Time {
+    return c.startDate
+}
+
+func (c *Event) EndDate() time.Time {
+    return c.endDate
 }
 
 func (c *Event) Important() bool {

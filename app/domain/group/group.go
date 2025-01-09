@@ -11,6 +11,7 @@ type Group struct {
 	id string
 	name string
 	usersID []string
+	icon string
 }
 
 
@@ -18,23 +19,26 @@ func Reconstruct(
 	id string,
 	name string,
 	usersID []string,
+	icon string,
 ) (*Group, error) {
 	return newGroup(
 		id,
 		name,
 		usersID,
+		icon,
 	)
 }
 
-func NewProduct(
-	id string,
+func NewGroup(
 	name string,
 	usersID []string,
+	icon string,
 ) (*Group, error) {
 	return newGroup(
 		ulid.NewUlid(),
 		name,
 		usersID,
+		icon,
 	)
 }
 
@@ -42,6 +46,7 @@ func newGroup(
 	id string,
 	name string,
 	usersID []string,
+	icon string,
 ) (*Group, error) {
 	// ownerIDのバリデーション
 	if !ulid.IsValid(id) {
@@ -51,11 +56,16 @@ func newGroup(
 	if utf8.RuneCountInString(name) < nameLengthMin || utf8.RuneCountInString(name) > nameLengthMax {
 		return nil, errDomain.NewError("グループ名が不正です。")
 	}
+	// アイコンのバリデーションとデフォルトの設定
+	if icon == "" {
+		icon = "defaultIcon"
+	}
 
 	return &Group{
 		id:          id,
 		name:        name,
-		usersID:   usersID,
+		usersID:     usersID,
+		icon:        icon,
 	}, nil
 }
 
@@ -67,8 +77,12 @@ func (p *Group) Name() string {
 	return p.name
 }
 
-func (p *Group) MemebersID() []string {
+func (p *Group) UsersID() []string {
 	return p.usersID
+}
+
+func (p *Group) Icon() string {
+    return p.icon
 }
 
 

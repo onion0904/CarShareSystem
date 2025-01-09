@@ -3,10 +3,11 @@ package user
 import "context"
 
 type UserRepository interface {
+	Update(ctx context.Context, user *User) error
     Save(ctx context.Context, user *User) error
-    FindUser(ctx context.Context, id string) (*User, error)
-	FindUserName(ctx context.Context, id string) (string, error)
-    FindUserIcon(ctx context.Context, id string) (string, error)
-	Delete(ctx context.Context, id string) error
-    ExistUser(email string, password string) bool
+    FindUser(ctx context.Context, UserID string) (*User, error)
+	FindUserName(ctx context.Context, UserID string) (*User, error)
+	Delete(ctx context.Context, UserID string) error
+    ExistUser(email string, password string) (bool,error)
+	FindAllGroupID(ctx context.Context,UserID string) (groupID []string,err error)
 }

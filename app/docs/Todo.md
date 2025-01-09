@@ -8,5 +8,3 @@
 - server
 - cmd
 - docs
-
-- calendarの日にちのバリデーションを31以下とかにする

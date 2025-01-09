@@ -3,9 +3,11 @@ package group
 import "context"
 
 type GroupRepository interface {
-	SaveGroup(ctx context.Context ,group *Group) error
-	DeleteGroup(ctx context.Context , groupID string) error
-	FindAllGroupUserID(ctx context.Context,groupID string) (usersID []string,err error)
-	FindAllGroupName(ctx context.Context,groupID string) (groupName string,err error)
-	FindGroupID(ctx context.Context,userID string) (groupID string,err error)
+	Update(ctx context.Context, user *Group) error
+	Save(ctx context.Context ,group *Group) error
+	AddGroupIDToUser(ctx context.Context ,groupID string, userID string) error
+	Delete(ctx context.Context , groupID string) error
+	FindAllUserID(ctx context.Context,groupID string) (usersID []string,err error)
+	FindGroup(ctx context.Context,groupID string) (group *Group,err error)
+	FindGroupName(ctx context.Context,groupID string) (groupName string,err error)
 }

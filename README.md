@@ -41,7 +41,8 @@
 - デプロイ先
     - Cloudflare
 - orm
-    - SQLBoiler
+    - ~SQLBoiler~ (Maintenance Mode)
+    - sqlc
 - framework
     - echo
 - ログイン認証

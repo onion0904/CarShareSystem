@@ -3,40 +3,23 @@ package calendar
 import (
 	"context"
 	"errors"
-	pkgTime "github.com/onion0904/go-pkg/time"
-	"time"
 )
 
-type CalendarDomainService interface {
-	AddEventToCalendar(ctx context.Context, event *Event) error
-}
-
-type calendarDomainService struct {
+type CalendarDomainService struct {
 	CalendarRepo CalendarRepository
-	startDate    time.Time
-	endDate      time.Time
 }
 
 func NewCalendarDomainService(
 	CalendarRepo CalendarRepository,
-	startDate time.Time,
-	endDate time.Time,
-) CalendarDomainService {
-	return &calendarDomainService{
+) *CalendarDomainService {
+	return &CalendarDomainService{
 		CalendarRepo: CalendarRepo,
-		startDate:     pkgTime.NextStartWeek(),
-		endDate:      pkgTime.NextEndWeek(),
 	}
 }
 
-func ReloadCalendar (c *calendarDomainService) {
-	c.startDate = pkgTime.NextStartWeek()
-	c.endDate = pkgTime.NextEndWeek()
-}
-
-func (c *calendarDomainService) AddEventToCalendar(ctx context.Context, event *Event) error {
+func (c *CalendarDomainService) AddEventToCalendar(ctx context.Context, event *Event) error {
 	// イベント期間の制約を確認
-	if event.date.Before(c.startDate) || event.date.After(c.endDate){
+	if event.date.Before(event.startDate) || event.date.After(event.endDate){
 		return errors.New("イベントが登録可能期間外です")
 	}
 
@@ -59,7 +42,7 @@ func (c *calendarDomainService) AddEventToCalendar(ctx context.Context, event *E
 	return nil
 }
 
-func (c *calendarDomainService) validNumEvents (ctx context.Context , eventIDs []string) bool {
+func (c *CalendarDomainService) validNumEvents (ctx context.Context , eventIDs []string) bool {
 	var importantEvent int
 	var nimportantEvent int
 	for _, eventID := range eventIDs {
