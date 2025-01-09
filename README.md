@@ -2,7 +2,7 @@
 
 ## 目的
 - CleanArchitectureを学ぶ
-- GraphQLとSQLboilerを使ってみる
+- GraphQLと~SQLboiler~sqlcを使ってみる
 - 友達と車をシェアしたい
 
 ## ユーザー登録
