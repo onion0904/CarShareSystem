@@ -1,0 +1,9 @@
+version: "2"
+sql:
+  - schema: infrastructure/db/sqlc/schema/schema.sql
+    queries: infrastructure/db/sqlc/sqlc_queries
+    engine: mysql
+    gen:
+      go:
+        package: sqlc
+        out: infrastructure/db/sqlc/dbgen

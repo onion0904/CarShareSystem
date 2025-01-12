@@ -1,0 +1,12 @@
+-- スキーマ定義
+
+CREATE TABLE events (
+    id CHAR(36) PRIMARY KEY,
+    users_id CHAR(36) NOT NULL,
+    together BOOLEAN NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    date DATE NOT NULL,
+    important BOOLEAN NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
