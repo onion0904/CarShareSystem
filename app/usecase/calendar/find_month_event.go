@@ -21,7 +21,7 @@ type FindMonthCalendarUseCaseDto struct {
 	eventIDs []string
 }
 
-func (uc *FindMonthCalendarUseCase) Run(ctx context.Context, year int, month int) (*FindMonthCalendarUseCaseDto, error) {
+func (uc *FindMonthCalendarUseCase) Run(ctx context.Context, year int32, month int32) (*FindMonthCalendarUseCaseDto, error) {
 	eventIDs, err := uc.calendarRepo.FindMonthEventID(ctx, year, month)
 	if err != nil {
 		return nil, err

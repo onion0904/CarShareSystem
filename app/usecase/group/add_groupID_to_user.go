@@ -30,7 +30,7 @@ func (uc *AddGroupIDToUserUseCase) Run(ctx context.Context, dto AddGroupIDToUser
     }
 	groupIDs := user.GroupID()
 	groupIDs = append(groupIDs, dto.groupID)
-	user, err = userDomain.Reconstruct(user.ID(), user.LastName(), user.FirstName(), user.Email(), user.Icon(), groupIDs)
+	user, err = userDomain.Reconstruct(user.ID(), user.LastName(), user.FirstName(), user.Email(),user.Password(), user.Icon(), groupIDs)
 	if err != nil {
 		return err
 	}

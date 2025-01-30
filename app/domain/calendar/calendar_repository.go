@@ -9,5 +9,5 @@ type CalendarRepository interface {
 	//以下はCalendarDomainService経由でなくてOKです
 	DeleteEvent(ctx context.Context , eventID string) error
 	FindEvent(ctx context.Context, eventID string) (*Event, error)
-	FindMonthEventID(ctx context.Context, year int, month int) (eventID []string,err error)
+	FindMonthEventID(ctx context.Context, year int32, month int32) (eventID []string,err error)
 }

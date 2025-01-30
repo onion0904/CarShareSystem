@@ -21,12 +21,13 @@ type SaveUseCaseDto struct {
 	lastName string
 	firstName string
 	email string
+	password string
 	icon string
 }
 
 func (uc *SaveUseCase) Run(ctx context.Context, dto SaveUseCaseDto) error {
 	// dtoからuserへ変換
-	user, err := userDomain.NewUser(dto.lastName, dto.firstName, dto.email, dto.icon)
+	user, err := userDomain.NewUser(dto.lastName, dto.firstName, dto.email, dto.password, dto.icon)
 	if err != nil {
 		return err
 	}

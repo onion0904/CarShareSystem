@@ -23,9 +23,9 @@ type FindCalendarUseCaseDto struct {
 	usersID     string
 	together    bool
 	description string
-	year        int
-	month       int
-	day         int
+	year        int32
+	month       int32
+	day         int32
 	date        time.Time
 	startDate   time.Time
 	endDate     time.Time

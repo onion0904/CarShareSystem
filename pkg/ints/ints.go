@@ -2,7 +2,7 @@ package ints
 
 import "strconv"
 
-func Digit(num int) int {
-	str := strconv.Itoa(num)
-    return len(str)
+func Digit(num int32) int32 {
+	str := strconv.Itoa(int(num))
+	return int32(len(str))
 }

@@ -13,6 +13,7 @@ type User struct {
 	lastName string
 	firstName string
 	email string
+	password string
 	icon string
 	groupID []string
 }
@@ -22,6 +23,7 @@ func Reconstruct(
     lastName string,
     firstName string,
     email string,
+	password string,
 	icon string,
 	groupID []string,
 ) (*User, error) {
@@ -30,6 +32,7 @@ func Reconstruct(
         lastName,
         firstName,
         email,
+		password,
 		icon,
 		groupID,
 	)
@@ -39,6 +42,7 @@ func NewUser(
 	lastName string,
 	firstName string,
 	email string,
+	password string,
 	icon string,
 ) (*User, error) {
 	return newUser(
@@ -46,6 +50,7 @@ func NewUser(
 		lastName,
 		firstName,
 		email,
+		password,
 		icon,
 		nil,
 	)
@@ -56,6 +61,7 @@ func newUser(
     lastName string,
     firstName string,
     email string,
+	password string,
 	icon string,
 	groupID []string,
 ) (*User, error) {
@@ -73,10 +79,11 @@ func newUser(
 	}
 
     return &User{
-        id:          id,
+        id:           id,
         lastName:     lastName,
         firstName:    firstName,
         email:        email,
+		password:     password,
 		icon:         icon,
 		groupID:      groupID,
     }, nil
@@ -96,6 +103,10 @@ func (u *User) FirstName() string {
 
 func (u *User) Email() string {
 	return u.email
+}
+
+func (u *User) Password() string {
+    return u.password
 }
 
 func (u *User) Icon() string {

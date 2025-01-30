@@ -15,9 +15,9 @@ type Event struct {
 	usersID string
 	together bool
 	description string
-	year int
-	month int
-	day int
+	year int32
+	month int32
+	day int32
 	date time.Time
 	startDate time.Time
 	endDate time.Time
@@ -29,9 +29,9 @@ func Reconstruct(
 	usersID string,
 	together bool,
 	description string,
-	year int,
-	month int,
-	day int,
+	year int32,
+	month int32,
+	day int32,
 	date time.Time,
 	startDate time.Time,
 	endDate time.Time,
@@ -78,9 +78,9 @@ func newEvent(
 	usersID string,
 	together bool,
 	description string,
-	year int,
-    month int,
-	day int,
+	year int32,
+    month int32,
+	day int32,
 	date time.Time,
 	startDate time.Time,
     endDate time.Time,
@@ -131,15 +131,15 @@ func (c *Event) Description() string {
 	return c.description
 }
 
-func (c *Event) Year() int {
+func (c *Event) Year() int32 {
     return c.year
 }
 
-func (c *Event) Month() int {
+func (c *Event) Month() int32 {
     return c.month
 }
 
-func (c *Event) Day() int {
+func (c *Event) Day() int32 {
     return c.day
 }
 
