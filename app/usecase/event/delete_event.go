@@ -1,24 +1,24 @@
-package calendar
+package event
 
 import (
 	"context"
-	calendarDomain "github.com/onion0904/app/domain/calendar"
+	eventDomain "github.com/onion0904/app/domain/event"
 )
 
 type DeleteEventUseCase struct {
-	calendarRepo calendarDomain.CalendarRepository
+	eventRepo eventDomain.EventRepository
 }
 
 func NewDeleteEventUseCase(
-	calendarRepo calendarDomain.CalendarRepository,
+	eventRepo eventDomain.EventRepository,
 ) *DeleteEventUseCase {
 	return &DeleteEventUseCase{
-		calendarRepo: calendarRepo,
+		eventRepo: eventRepo,
 	}
 }
 
 func (uc *DeleteEventUseCase) Run(ctx context.Context, eventID string) error {
-	err := uc.calendarRepo.DeleteEvent(ctx, eventID)
+	err := uc.eventRepo.DeleteEvent(ctx, eventID)
 	if err != nil {
 		return err
 	}

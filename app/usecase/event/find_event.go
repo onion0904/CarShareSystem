@@ -1,24 +1,24 @@
-package calendar
+package event
 
 import (
 	"context"
-	calendarDomain "github.com/onion0904/app/domain/calendar"
+	eventDomain "github.com/onion0904/app/domain/event"
 	"time"
 )
 
-type FindCalendarUseCase struct {
-	calendarRepo calendarDomain.CalendarRepository
+type FindEventUseCase struct {
+	eventRepo eventDomain.EventRepository
 }
 
-func NewFindCalendarUseCase(
-	calendarRepo calendarDomain.CalendarRepository,
-) *FindCalendarUseCase {
-	return &FindCalendarUseCase{
-		calendarRepo: calendarRepo,
+func NewFindEventUseCase(
+	eventRepo eventDomain.EventRepository,
+) *FindEventUseCase {
+	return &FindEventUseCase{
+		eventRepo: eventRepo,
 	}
 }
 
-type FindCalendarUseCaseDto struct {
+type FindEventUseCaseDto struct {
 	id          string
 	usersID     string
 	together    bool
@@ -32,12 +32,12 @@ type FindCalendarUseCaseDto struct {
 	important   bool
 }
 
-func (uc *FindCalendarUseCase) Run(ctx context.Context, eventID string) (*FindCalendarUseCaseDto, error) {
-	event, err := uc.calendarRepo.FindEvent(ctx, eventID)
+func (uc *FindEventUseCase) Run(ctx context.Context, eventID string) (*FindEventUseCaseDto, error) {
+	event, err := uc.eventRepo.FindEvent(ctx, eventID)
 	if err != nil {
 		return nil, err
 	}
-	return &FindCalendarUseCaseDto{
+	return &FindEventUseCaseDto{
 		id:          event.ID(),
 		usersID:     event.UserID(),
 		together:    event.Together(),

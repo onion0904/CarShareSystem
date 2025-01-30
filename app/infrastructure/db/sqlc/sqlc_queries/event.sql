@@ -8,10 +8,12 @@ INSERT INTO
         year,
         month,
         day,
+        date,
         start_date,
         end_date,
         created_at,
-        updated_at
+        updated_at,
+        important
     )
 VALUES
     (
@@ -22,10 +24,12 @@ VALUES
         sqlc.arg(year),
         sqlc.arg(month),
         sqlc.arg(day),
+        sqlc.arg(date),
         sqlc.arg(start_date),
         sqlc.arg(end_date),
         NOW(),
-        NOW()
+        NOW(),
+        sqlc.arg(important)
     ) ON DUPLICATE KEY
 UPDATE
     users_id = sqlc.arg(users_id),
@@ -34,9 +38,12 @@ UPDATE
     year = sqlc.arg(year),
     month = sqlc.arg(month),
     day = sqlc.arg(day),
+    date = sqlc.arg(date),
     start_date = sqlc.arg(start_date),
     end_date = sqlc.arg(end_date),
-    updated_at = NOW();
+    updated_at = NOW(),
+    important = sqlc.arg(important);
+
 
 -- name: DeleteEvent :exec
 DELETE FROM

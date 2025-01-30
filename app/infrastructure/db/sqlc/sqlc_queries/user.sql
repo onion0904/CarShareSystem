@@ -1,6 +1,13 @@
 -- name: UserFindById :one
 SELECT
-    *
+    id,
+    last_name,
+    first_name,
+    email,
+    password,
+    icon,
+    created_at,
+    updated_at
 FROM
     users
 WHERE

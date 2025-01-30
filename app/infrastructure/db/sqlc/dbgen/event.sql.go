@@ -24,7 +24,7 @@ func (q *Queries) DeleteEvent(ctx context.Context, id string) error {
 
 const findEvent = `-- name: FindEvent :one
 SELECT
-    id, users_id, together, description, year, month, day, created_at, start_date, end_date, updated_at
+    id, users_id, together, description, year, month, day, date, created_at, start_date, end_date, updated_at, important
 FROM
     events
 WHERE
@@ -42,10 +42,12 @@ func (q *Queries) FindEvent(ctx context.Context, id string) (Event, error) {
 		&i.Year,
 		&i.Month,
 		&i.Day,
+		&i.Date,
 		&i.CreatedAt,
 		&i.StartDate,
 		&i.EndDate,
 		&i.UpdatedAt,
+		&i.Important,
 	)
 	return i, err
 }
@@ -97,10 +99,12 @@ INSERT INTO
         year,
         month,
         day,
+        date,
         start_date,
         end_date,
         created_at,
-        updated_at
+        updated_at,
+        important
     )
 VALUES
     (
@@ -113,8 +117,10 @@ VALUES
         ?,
         ?,
         ?,
+        ?,
         NOW(),
-        NOW()
+        NOW(),
+        ?
     ) ON DUPLICATE KEY
 UPDATE
     users_id = ?,
@@ -123,9 +129,11 @@ UPDATE
     year = ?,
     month = ?,
     day = ?,
+    date = ?,
     start_date = ?,
     end_date = ?,
-    updated_at = NOW()
+    updated_at = NOW(),
+    important = ?
 `
 
 type SaveEventParams struct {
@@ -136,8 +144,10 @@ type SaveEventParams struct {
 	Year        int32
 	Month       int32
 	Day         int32
+	Date        time.Time
 	StartDate   time.Time
 	EndDate     time.Time
+	Important   bool
 }
 
 func (q *Queries) SaveEvent(ctx context.Context, arg SaveEventParams) error {
@@ -149,16 +159,20 @@ func (q *Queries) SaveEvent(ctx context.Context, arg SaveEventParams) error {
 		arg.Year,
 		arg.Month,
 		arg.Day,
+		arg.Date,
 		arg.StartDate,
 		arg.EndDate,
+		arg.Important,
 		arg.UsersID,
 		arg.Together,
 		arg.Description,
 		arg.Year,
 		arg.Month,
 		arg.Day,
+		arg.Date,
 		arg.StartDate,
 		arg.EndDate,
+		arg.Important,
 	)
 	return err
 }

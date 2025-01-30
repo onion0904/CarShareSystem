@@ -1,4 +1,4 @@
-package calendar
+package event
 
 import(
 	"unicode/utf8"

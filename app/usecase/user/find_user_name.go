@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 
 	userDomain "github.com/onion0904/app/domain/user"
 )
@@ -24,11 +23,10 @@ type FindUserNameUseCaseDto struct {
 }
 
 func (uc *FindUserNameUseCase) Run(ctx context.Context, id string) (*FindUserNameUseCaseDto, error) {
-	user, err := uc.userRepo.FindUserName(ctx, id)
+	Name, err := uc.userRepo.FindUserName(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	Name := fmt.Sprintf(user.LastName()+user.FirstName())
 	return &FindUserNameUseCaseDto{
         Name: Name,
     }, nil

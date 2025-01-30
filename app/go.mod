@@ -4,6 +4,7 @@ go 1.22.3
 
 require (
 	github.com/go-sql-driver/mysql v1.8.1
+	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo/v4 v4.13.0
 	github.com/onion0904/go-pkg v0.0.0-00010101000000-000000000000
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e

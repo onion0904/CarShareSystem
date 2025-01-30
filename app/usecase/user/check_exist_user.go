@@ -22,7 +22,7 @@ type CheckExistUserUseCaseDto struct {
 }
 
 func (uc *CheckExistUserUseCase) Run(ctx context.Context, email string, password string) (*CheckExistUserUseCaseDto,error) {
-	exist,err := uc.userRepo.ExistUser(email, password)
+	exist,err := uc.userRepo.ExistUser(ctx,email, password)
 	if err != nil {
         return nil, err
     }

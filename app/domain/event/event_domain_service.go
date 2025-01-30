@@ -1,30 +1,30 @@
-package calendar
+package event
 
 import (
 	"context"
 	"errors"
 )
 
-type CalendarDomainService struct {
-	CalendarRepo CalendarRepository
+type EventDomainService struct {
+	EventRepo EventRepository
 }
 
-func NewCalendarDomainService(
-	CalendarRepo CalendarRepository,
-) *CalendarDomainService {
-	return &CalendarDomainService{
-		CalendarRepo: CalendarRepo,
+func NewEventDomainService(
+	EventRepo EventRepository,
+) *EventDomainService {
+	return &EventDomainService{
+		EventRepo: EventRepo,
 	}
 }
 
-func (c *CalendarDomainService) AddEventToCalendar(ctx context.Context, event *Event) error {
+func (c *EventDomainService) SaveEventService(ctx context.Context, event *Event) error {
 	// イベント期間の制約を確認
 	if event.date.Before(event.startDate) || event.date.After(event.endDate){
 		return errors.New("イベントが登録可能期間外です")
 	}
 
 	// 現在のイベント数を取得
-	events, err := c.CalendarRepo.FindMonthEventID(ctx, event.year, event.month)
+	events, err := c.EventRepo.FindMonthEventID(ctx, event.year, event.month)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func (c *CalendarDomainService) AddEventToCalendar(ctx context.Context, event *E
 		return errors.New("イベントの最大数を超えています")
 	}
 
-	err = c.CalendarRepo.SaveEvent(ctx, event)
+	err = c.EventRepo.SaveEvent(ctx, event)
 	if err != nil {
 		return err
 	}
@@ -42,11 +42,11 @@ func (c *CalendarDomainService) AddEventToCalendar(ctx context.Context, event *E
 	return nil
 }
 
-func (c *CalendarDomainService) validNumEvents (ctx context.Context , eventIDs []string) bool {
+func (c *EventDomainService) validNumEvents (ctx context.Context , eventIDs []string) bool {
 	var importantEvent int
 	var nimportantEvent int
 	for _, eventID := range eventIDs {
-		event, err := c.CalendarRepo.FindEvent(ctx, eventID)
+		event, err := c.EventRepo.FindEvent(ctx, eventID)
 		if err!= nil {
             return false
         }
