@@ -18,11 +18,8 @@ const delay = 5 * time.Second
 
 var (
 	once      sync.Once
-	readOnce  sync.Once
 	query     *dbgen.Queries
-	readQuery *dbgen.Queries
 	dbcon     *sql.DB
-	readDBCon *sql.DB
 )
 
 // contextからQueriesを取得する。contextにQueriesが存在しない場合は、パッケージ変数からQueriesを取得する
@@ -34,16 +31,8 @@ func GetQuery(ctx context.Context) *dbgen.Queries {
 	return query
 }
 
-func GetReadQuery() *dbgen.Queries {
-	return readQuery
-}
-
 func SetQuery(q *dbgen.Queries) {
 	query = q
-}
-
-func SetReadQuery(q *dbgen.Queries) {
-	readQuery = q
 }
 
 func GetDB() *sql.DB {
@@ -52,10 +41,6 @@ func GetDB() *sql.DB {
 
 func SetDB(d *sql.DB) {
 	dbcon = d
-}
-
-func SetReadDB(d *sql.DB) {
-	readDBCon = d
 }
 
 func NewMainDB(cnf config.DBConfig) {
@@ -73,24 +58,6 @@ func NewMainDB(cnf config.DBConfig) {
 		q := dbgen.New(dbcon)
 		SetQuery(q)
 		SetDB(dbcon)
-	})
-}
-
-func NewReadDB(cnf config.ReadDBConfig) {
-	readOnce.Do(func() {
-		dbcon, err := connect(
-			cnf.User,
-			cnf.Password,
-			cnf.Host,
-			cnf.Port,
-			cnf.Name,
-		)
-		if err != nil {
-			panic(err)
-		}
-		q := dbgen.New(dbcon)
-		SetReadQuery(q)
-		SetReadDB(dbcon)
 	})
 }
 
