@@ -22,6 +22,7 @@ type FindUserUseCaseDto struct {
 	LastName    string
 	FirstName   string
 	Email       string
+	Password    string
 	Icon        string
 	groupID      []string
 }
@@ -36,7 +37,8 @@ func (uc *FindUserUseCase) Run(ctx context.Context, id string) (*FindUserUseCase
 		LastName:    user.LastName(),
 		FirstName:   user.FirstName(),
 		Email:       user.Email(),
+		Password:    user.Password(),
 		Icon:        user.Icon(),
-		groupID:      user.GroupID(),
+		groupID:     user.GroupID(),
 	}, nil
 }
