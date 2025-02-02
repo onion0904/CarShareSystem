@@ -1,9 +1,10 @@
 # スカラー型の定義
-scalar DateTime # "2025-02-02T12:00:00Z" のような形式
+# "2025-02-02T12:00:00Z" のような形式
+scalar DateTime
 
 # User型の定義
 type User {
-  id: ID!
+  id: String!
   lastName: String!
   firstName: String!
   email: String!
@@ -17,7 +18,7 @@ type User {
 
 # Group型の定義
 type Group {
-  id: ID!
+  id: String!
   name: String!
   icon: String
   createdAt: DateTime!
@@ -27,8 +28,8 @@ type Group {
 
 # Event型の定義
 type Event {
-  id: ID!
-  userID: ID!
+  id: String!
+  userID: String!
   together: Boolean!
   description: String!
   year: Int!
@@ -45,18 +46,18 @@ type Event {
 # クエリの定義(データの取得のエンドポイント)
 type Query {
   # ユーザー関連
-  user(id: ID!): User
+  user(id: String!): User
   users: [User!]!
 
   # グループ関連
-  group(id: ID!): Group
+  group(id: String!): Group
   groups: [Group!]!
 
   # イベント関連
-  event(id: ID!): Event
+  event(id: String!): Event
   events: [Event!]!
-  eventsByUser(userId: ID!): [Event!]!
-  eventsByGroup(groupId: ID!): [Event!]!
+  eventsByUser(userId: String!): [Event!]!
+  eventsByGroup(groupId: String!): [Event!]!
   eventsByMonth(input: MonthlyEvent!): [Event!]!
 
 }
@@ -89,7 +90,7 @@ input UpdateGroupInput {
 }
 
 input CreateEventInput {
-  userId: ID!
+  userId: String!
   together: Boolean!
   description: String!
   year: Int!
@@ -122,18 +123,18 @@ input MonthlyEvent {
 type Mutation {
   # ユーザー関連
   createUser(input: CreateUserInput!): User!
-  updateUser(id: ID!, input: UpdateUserInput!): User!
-  deleteUser(id: ID!): Boolean!
+  updateUser(id: String!, input: UpdateUserInput!): User!
+  deleteUser(id: String!): Boolean!
 
   # グループ関連
   createGroup(input: CreateGroupInput!): Group!
-  updateGroup(id: ID!, input: UpdateGroupInput!): Group!
-  deleteGroup(id: ID!): Boolean!
-  addUserToGroup(groupId: ID!, userId: ID!): Group!
-  removeUserFromGroup(groupId: ID!, userId: ID!): Group!
+  updateGroup(id: String!, input: UpdateGroupInput!): Group!
+  deleteGroup(id: String!): Boolean!
+  addUserToGroup(groupId: String!, userId: String!): Group!
+  removeUserFromGroup(groupId: String!, userId: String!): Group!
 
   # イベント関連
   createEvent(input: CreateEventInput!): Event!
-  updateEvent(id: ID!, input: UpdateEventInput!): Event!
-  deleteEvent(id: ID!): Boolean!
+  updateEvent(id: String!, input: UpdateEventInput!): Event!
+  deleteEvent(id: String!): Boolean!
 }

@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	ulid "github.com/oklog/ulid/v2"
 	"github.com/onion0904/app/presentation/graphql/graph/model"
 )
 
@@ -18,12 +17,12 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 }
 
 // UpdateUser is the resolver for the updateUser field.
-func (r *mutationResolver) UpdateUser(ctx context.Context, id ulid.ULID, input model.UpdateUserInput) (*model.User, error) {
+func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input model.UpdateUserInput) (*model.User, error) {
 	panic(fmt.Errorf("not implemented: UpdateUser - updateUser"))
 }
 
 // DeleteUser is the resolver for the deleteUser field.
-func (r *mutationResolver) DeleteUser(ctx context.Context, id ulid.ULID) (bool, error) {
+func (r *mutationResolver) DeleteUser(ctx context.Context, id string) (bool, error) {
 	panic(fmt.Errorf("not implemented: DeleteUser - deleteUser"))
 }
 
@@ -33,22 +32,22 @@ func (r *mutationResolver) CreateGroup(ctx context.Context, input model.CreateGr
 }
 
 // UpdateGroup is the resolver for the updateGroup field.
-func (r *mutationResolver) UpdateGroup(ctx context.Context, id ulid.ULID, input model.UpdateGroupInput) (*model.Group, error) {
+func (r *mutationResolver) UpdateGroup(ctx context.Context, id string, input model.UpdateGroupInput) (*model.Group, error) {
 	panic(fmt.Errorf("not implemented: UpdateGroup - updateGroup"))
 }
 
 // DeleteGroup is the resolver for the deleteGroup field.
-func (r *mutationResolver) DeleteGroup(ctx context.Context, id ulid.ULID) (bool, error) {
+func (r *mutationResolver) DeleteGroup(ctx context.Context, id string) (bool, error) {
 	panic(fmt.Errorf("not implemented: DeleteGroup - deleteGroup"))
 }
 
 // AddUserToGroup is the resolver for the addUserToGroup field.
-func (r *mutationResolver) AddUserToGroup(ctx context.Context, groupID ulid.ULID, userID ulid.ULID) (*model.Group, error) {
+func (r *mutationResolver) AddUserToGroup(ctx context.Context, groupID string, userID string) (*model.Group, error) {
 	panic(fmt.Errorf("not implemented: AddUserToGroup - addUserToGroup"))
 }
 
 // RemoveUserFromGroup is the resolver for the removeUserFromGroup field.
-func (r *mutationResolver) RemoveUserFromGroup(ctx context.Context, groupID ulid.ULID, userID ulid.ULID) (*model.Group, error) {
+func (r *mutationResolver) RemoveUserFromGroup(ctx context.Context, groupID string, userID string) (*model.Group, error) {
 	panic(fmt.Errorf("not implemented: RemoveUserFromGroup - removeUserFromGroup"))
 }
 
@@ -58,17 +57,17 @@ func (r *mutationResolver) CreateEvent(ctx context.Context, input model.CreateEv
 }
 
 // UpdateEvent is the resolver for the updateEvent field.
-func (r *mutationResolver) UpdateEvent(ctx context.Context, id ulid.ULID, input model.UpdateEventInput) (*model.Event, error) {
+func (r *mutationResolver) UpdateEvent(ctx context.Context, id string, input model.UpdateEventInput) (*model.Event, error) {
 	panic(fmt.Errorf("not implemented: UpdateEvent - updateEvent"))
 }
 
 // DeleteEvent is the resolver for the deleteEvent field.
-func (r *mutationResolver) DeleteEvent(ctx context.Context, id ulid.ULID) (bool, error) {
+func (r *mutationResolver) DeleteEvent(ctx context.Context, id string) (bool, error) {
 	panic(fmt.Errorf("not implemented: DeleteEvent - deleteEvent"))
 }
 
 // User is the resolver for the user field.
-func (r *queryResolver) User(ctx context.Context, id ulid.ULID) (*model.User, error) {
+func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
 	panic(fmt.Errorf("not implemented: User - user"))
 }
 
@@ -78,7 +77,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 }
 
 // Group is the resolver for the group field.
-func (r *queryResolver) Group(ctx context.Context, id ulid.ULID) (*model.Group, error) {
+func (r *queryResolver) Group(ctx context.Context, id string) (*model.Group, error) {
 	panic(fmt.Errorf("not implemented: Group - group"))
 }
 
@@ -88,7 +87,7 @@ func (r *queryResolver) Groups(ctx context.Context) ([]*model.Group, error) {
 }
 
 // Event is the resolver for the event field.
-func (r *queryResolver) Event(ctx context.Context, id ulid.ULID) (*model.Event, error) {
+func (r *queryResolver) Event(ctx context.Context, id string) (*model.Event, error) {
 	panic(fmt.Errorf("not implemented: Event - event"))
 }
 
@@ -98,12 +97,12 @@ func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
 }
 
 // EventsByUser is the resolver for the eventsByUser field.
-func (r *queryResolver) EventsByUser(ctx context.Context, userID ulid.ULID) ([]*model.Event, error) {
+func (r *queryResolver) EventsByUser(ctx context.Context, userID string) ([]*model.Event, error) {
 	panic(fmt.Errorf("not implemented: EventsByUser - eventsByUser"))
 }
 
 // EventsByGroup is the resolver for the eventsByGroup field.
-func (r *queryResolver) EventsByGroup(ctx context.Context, groupID ulid.ULID) ([]*model.Event, error) {
+func (r *queryResolver) EventsByGroup(ctx context.Context, groupID string) ([]*model.Event, error) {
 	panic(fmt.Errorf("not implemented: EventsByGroup - eventsByGroup"))
 }
 
@@ -120,18 +119,3 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
-}
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
-}
-*/

@@ -3,7 +3,6 @@ package graph
 import (
 	"github.com/onion0904/go-pkg/ulid"
 	"time"
-	_ "github.com/onion0904/app/presentation/graphql/graph/scalar"
 )
 
 // Resolver はアプリケーションの依存関係を管理する
