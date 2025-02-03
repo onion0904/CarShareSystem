@@ -20,16 +20,16 @@ func NewEventUsecase(
 
 // AddEventUseCaseDTO ユースケース層で使用する入力データ
 type AddEventUseCaseDTO struct {
-	usersID string
-	together bool
-	description string
-	important bool
+	UsersID string
+	Together bool
+	Description string
+	Important bool
 }
 
 
 // AddEvent メソッド: イベントを追加する
 func (uc *SaveEventUsecase) AddEvent(ctx context.Context, dto AddEventUseCaseDTO) error {	
-	event, err := eventDomain.NewEvent(dto.usersID, dto.together, dto.description, dto.important)
+	event, err := eventDomain.NewEvent(dto.UsersID, dto.Together, dto.Description, dto.Important)
 	if err != nil {
 		return err
 	}

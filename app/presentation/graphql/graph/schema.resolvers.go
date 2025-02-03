@@ -9,11 +9,35 @@ import (
 	"fmt"
 
 	"github.com/onion0904/app/presentation/graphql/graph/model"
+	domain_user "github.com/onion0904/app/domain/user"
+	domain_group "github.com/onion0904/app/domain/group"
+	domain_event "github.com/onion0904/app/domain/event"
+
+	usecase_user "github.com/onion0904/app/usecase/user"
+	usecase_group "github.com/onion0904/app/usecase/group"
+	usecase_event "github.com/onion0904/app/usecase/event"
+
+	repo_user "github.com/onion0904/app/infrastructure/repository"
 )
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUserInput) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
+	userRepo := repo_user.NewUserRepository()
+	user := usecase_user.NewSaveUserUseCase(userRepo)
+
+	DTO := usecase_user.SaveUseCaseDto{
+		LastName:    input.LastName,
+        FirstName:   input.FirstName,
+        Email:       input.Email,
+        Password:    input.Password,
+        Icon:        *input.Icon,
+	}
+
+	err := user.Run(ctx,DTO)
+	if err != nil {
+		return nil, err
+	}
+	return nil,nil
 }
 
 // UpdateUser is the resolver for the updateUser field.

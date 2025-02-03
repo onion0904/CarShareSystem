@@ -18,7 +18,7 @@ func NewCheckExistUserUseCase(
 }
 
 type CheckExistUserUseCaseDto struct {
-	exist bool
+	Exist bool
 }
 
 func (uc *CheckExistUserUseCase) Run(ctx context.Context, email string, password string) (*CheckExistUserUseCaseDto,error) {
@@ -27,6 +27,6 @@ func (uc *CheckExistUserUseCase) Run(ctx context.Context, email string, password
         return nil, err
     }
 	return &CheckExistUserUseCaseDto{
-		exist: exist,
+		Exist: exist,
 	},nil
 }

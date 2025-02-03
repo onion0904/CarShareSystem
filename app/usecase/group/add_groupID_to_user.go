@@ -18,18 +18,18 @@ func NewAddGroupIDToUserUseCase(
 }
 
 type AddGroupIDToUserUseCaseDto struct {
-	userID  string
-	groupID string
+	UserID  string
+	GroupID string
 }
 
 //
 func (uc *AddGroupIDToUserUseCase) Run(ctx context.Context, dto AddGroupIDToUserUseCaseDto) error {
-	user, err := uc.userRepo.FindUser(ctx, dto.userID)
+	user, err := uc.userRepo.FindUser(ctx, dto.UserID)
 	if err != nil {
         return err
     }
 	groupIDs := user.GroupID()
-	groupIDs = append(groupIDs, dto.groupID)
+	groupIDs = append(groupIDs, dto.GroupID)
 	user, err = userDomain.Reconstruct(user.ID(), user.LastName(), user.FirstName(), user.Email(),user.Password(), user.Icon(), groupIDs)
 	if err != nil {
 		return err

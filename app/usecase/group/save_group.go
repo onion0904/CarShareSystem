@@ -18,14 +18,14 @@ func NewSaveUserUseCase(
 }
 
 type SaveUseCaseDto struct {
-	name string
-	usersID []string
-	icon string
+	Name string
+	UsersID []string
+	Icon string
 }
 
 func (uc *SaveUseCase) Run(ctx context.Context, dto SaveUseCaseDto) error {
 	// dtoからuserへ変換
-	group, err := groupDomain.NewGroup(dto.name, dto.usersID, dto.icon)
+	group, err := groupDomain.NewGroup(dto.Name, dto.UsersID, dto.Icon)
 	if err != nil {
 		return err
 	}

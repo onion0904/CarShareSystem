@@ -18,10 +18,10 @@ func NewFindGroupUseCase(
 }
 
 type FindGroupUseCaseDto struct {
-	id string
-	name string
-	usersID []string
-	icon string
+	Id string
+	Name string
+	UsersID []string
+	Icon string
 }
 
 func (uc *FindGroupUseCase) Run(ctx context.Context, groupID string) (*FindGroupUseCaseDto, error) {
@@ -30,9 +30,9 @@ func (uc *FindGroupUseCase) Run(ctx context.Context, groupID string) (*FindGroup
 		return nil, err
 	}
 	return &FindGroupUseCaseDto{
-		id:          group.ID(),
-		name:        group.Name(),
-		usersID:     group.UsersID(),
-		icon:        group.Icon(),
+		Id:          group.ID(),
+		Name:        group.Name(),
+		UsersID:     group.UsersID(),
+		Icon:        group.Icon(),
 	}, nil
 }
