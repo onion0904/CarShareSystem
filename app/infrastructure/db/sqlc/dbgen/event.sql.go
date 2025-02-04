@@ -89,7 +89,7 @@ func (q *Queries) FindMonthEventID(ctx context.Context, arg FindMonthEventIDPara
 	return items, nil
 }
 
-const saveEvent = `-- name: SaveEvent :exec
+const upsertEvent = `-- name: UpsertEvent :exec
 INSERT INTO
     events (
         id,
@@ -136,7 +136,7 @@ UPDATE
     important = ?
 `
 
-type SaveEventParams struct {
+type UpsertEventParams struct {
 	ID          string
 	UserID      string
 	Together    bool
@@ -150,8 +150,8 @@ type SaveEventParams struct {
 	Important   bool
 }
 
-func (q *Queries) SaveEvent(ctx context.Context, arg SaveEventParams) error {
-	_, err := q.db.ExecContext(ctx, saveEvent,
+func (q *Queries) UpsertEvent(ctx context.Context, arg UpsertEventParams) error {
+	_, err := q.db.ExecContext(ctx, upsertEvent,
 		arg.ID,
 		arg.UserID,
 		arg.Together,

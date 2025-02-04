@@ -21,7 +21,7 @@ func (gr *groupRepository)Update(ctx context.Context, group *group.Group) error 
 	query := db.GetQuery(ctx)
 
 	
-	err := query.UpdateGroup(ctx,dbgen.UpdateGroupParams{
+	err := query.UpsertGroup(ctx,dbgen.UpsertGroupParams{
 		Name: group.Name(), 
 		Icon: sql.NullString{String: group.Icon(), Valid: group.Icon()!= ""}, 
 		ID: group.ID(),
@@ -35,23 +35,10 @@ func (gr *groupRepository)Update(ctx context.Context, group *group.Group) error 
 func (gr *groupRepository)Save(ctx context.Context ,group *group.Group) error {
 	query := db.GetQuery(ctx)
 
-	err := query.SaveGroup(ctx, dbgen.SaveGroupParams{
+	err := query.UpsertGroup(ctx, dbgen.UpsertGroupParams{
         ID:   group.ID(),
         Name: group.Name(), 
         Icon: sql.NullString{String: group.Icon(), Valid: group.Icon()!= ""},
-    })
-	if err!= nil {
-        return err
-    }
-	return nil
-}
-	
-func (gr *groupRepository)AddGroupIDToUser(ctx context.Context ,groupID string, userID string) error {
-	query := db.GetQuery(ctx)
-
-    err := query.AddGroupIDToUser(ctx, dbgen.AddGroupIDToUserParams{
-        Groupid: groupID,
-        Userid: userID,
     })
 	if err!= nil {
         return err
@@ -96,15 +83,21 @@ func (gr *groupRepository)FindGroup(ctx context.Context,groupID string) (*group.
 		icon = g.Icon.String
 	}
 
-	userIDs, err := query.FindAllUserID(ctx, groupID)
+	userIDs, err := query.GetUserIDsByGroupID(ctx, groupID)
 	if err != nil {
 		return nil, err
 	}
+
+	eventIDs, err := query.GetEventIDsByGroupID(ctx, groupID)
+	if err!= nil {
+        return nil, err
+    }
 
 	ng, err := group.Reconstruct(
 		g.ID,
 		g.Name,
 		userIDs,
+		eventIDs,
 		icon,
 	)
 	if err != nil {
@@ -113,12 +106,41 @@ func (gr *groupRepository)FindGroup(ctx context.Context,groupID string) (*group.
 	return ng, nil
 }
 
-func (gr *groupRepository)FindGroupName(ctx context.Context,groupID string) (string, error) {
+func (gr *groupRepository)AddUserToGroup(ctx context.Context ,groupID string, userID string) error {
 	query := db.GetQuery(ctx)
 
-	groupName, err := query.FindGroupName(ctx, groupID)
+    err := query.AddUserToGroup(ctx, dbgen.AddUserToGroupParams{
+        Groupid: groupID,
+        Userid: userID,
+    })
 	if err!= nil {
-		return "", err
-	}
-	return groupName, nil
+        return err
+    }
+	return nil
+}
+
+func (gr *groupRepository)AddEventToGroup(ctx context.Context ,groupID string, eventID string) error {
+	query := db.GetQuery(ctx)
+
+    err := query.AddEventToGroup(ctx, dbgen.AddEventToGroupParams{
+        Groupid: groupID,
+        Eventid: eventID,
+    })
+	if err!= nil {
+        return err
+    }
+	return nil
+}
+
+func (gr *groupRepository)RemoveUserFromGroup(ctx context.Context ,groupID string, userID string) error {
+	query := db.GetQuery(ctx)
+
+    err := query.RemoveUserFromGroup(ctx, dbgen.RemoveUserFromGroupParams{
+        GroupID: groupID,
+        UserID: userID,
+    })
+	if err!= nil {
+        return err
+    }
+	return nil
 }

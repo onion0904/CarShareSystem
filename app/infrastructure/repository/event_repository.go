@@ -20,9 +20,9 @@ func NewEventRepository() event.EventRepository {
 func (er *eventRepository)SaveEvent(ctx context.Context, event *event.Event) error {
 	query := db.GetQuery(ctx)
 
-	err := query.SaveEvent(ctx ,dbgen.SaveEventParams{
+	err := query.UpsertEvent(ctx ,dbgen.UpsertEventParams{
 		ID:          event.ID(),
-		UsersID:     event.UserID(),
+		UserID:     event.UserID(),
 		Together:    event.Together(),
 		Description: event.Description(),
 		Year:        event.Year(),
@@ -60,7 +60,7 @@ func (er *eventRepository)FindEvent(ctx context.Context, eventID string) (*event
 
 	ne, err := event.Reconstruct(
 		e.ID,
-        e.UsersID,
+        e.UserID,
         e.Together,
         e.Description,
         e.Year,

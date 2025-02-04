@@ -50,7 +50,7 @@ func (ur *userRepository)Save(ctx context.Context, user *user.User) error {
 func (ur *userRepository)FindUser(ctx context.Context, UserID string) (*user.User, error) {
 	query := db.GetQuery(ctx)
 
-	u, err := query.UserFindById(ctx, UserID)
+	u, err := query.FindUser(ctx, UserID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errDomain.NewError("User not found")
@@ -64,10 +64,15 @@ func (ur *userRepository)FindUser(ctx context.Context, UserID string) (*user.Use
 		icon = u.Icon.String
 	}
 
-	groupIDs, err := query.FindAllGroupID(ctx, UserID)
+	groupIDs, err := query.GetGroupIDsByUserID(ctx, UserID)
 	if err != nil {
 		return nil, err
 	}
+
+	eventIDs, err := query.GetEventIDsByUserID(ctx, UserID)
+	if err!= nil {
+        return nil, err
+    }
 
 	nu, err := user.Reconstruct(
 		u.ID,
@@ -77,23 +82,12 @@ func (ur *userRepository)FindUser(ctx context.Context, UserID string) (*user.Use
 		u.Password,
         icon,
 		groupIDs,
+		eventIDs,
 	)
 	if err != nil {
 		return nil, err
 	}
 	return nu, nil
-}
-	
-
-func (ur *userRepository)FindUserName(ctx context.Context, UserID string) (string, error) {
-	query := db.GetQuery(ctx)
-
-	userName,err := query.UserFindName(ctx,UserID)
-	if err!= nil {
-		return "",err
-	}
-
-	return userName, nil
 }
 	
 func (ur *userRepository)Delete(ctx context.Context, UserID string) error {
@@ -113,15 +107,4 @@ func (ur *userRepository)ExistUser(ctx context.Context, email string, password s
         return false, err
     }
 	return exist, nil
-}
-	
-func (ur *userRepository)FindAllGroupID(ctx context.Context,UserID string) ([]string, error) {
-	query := db.GetQuery(ctx)
-
-	groupIDs, err := query.FindAllGroupID(ctx, UserID)
-	if err != nil {
-		return nil, err
-	}
-
-	return groupIDs, nil
 }

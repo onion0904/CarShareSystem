@@ -201,18 +201,23 @@ func (q *Queries) GetUserIDsByGroupID(ctx context.Context, groupid string) ([]st
 }
 
 const removeUserFromGroup = `-- name: RemoveUserFromGroup :exec
-DELETE FROM
+DELETE FROM 
     group_users
-WHERE
-    group_id = ?
+WHERE 
+    group_id = ? AND user_id = ?
 `
 
-func (q *Queries) RemoveUserFromGroup(ctx context.Context, groupid string) error {
-	_, err := q.db.ExecContext(ctx, removeUserFromGroup, groupid)
+type RemoveUserFromGroupParams struct {
+	GroupID string
+	UserID  string
+}
+
+func (q *Queries) RemoveUserFromGroup(ctx context.Context, arg RemoveUserFromGroupParams) error {
+	_, err := q.db.ExecContext(ctx, removeUserFromGroup, arg.GroupID, arg.UserID)
 	return err
 }
 
-const saveGroup = `-- name: SaveGroup :exec
+const upsertGroup = `-- name: UpsertGroup :exec
 INSERT INTO
     ` + "`" + `groups` + "`" + ` (
         id,
@@ -235,14 +240,14 @@ UPDATE
     updated_at = NOW()
 `
 
-type SaveGroupParams struct {
+type UpsertGroupParams struct {
 	ID   string
 	Name string
 	Icon sql.NullString
 }
 
-func (q *Queries) SaveGroup(ctx context.Context, arg SaveGroupParams) error {
-	_, err := q.db.ExecContext(ctx, saveGroup,
+func (q *Queries) UpsertGroup(ctx context.Context, arg UpsertGroupParams) error {
+	_, err := q.db.ExecContext(ctx, upsertGroup,
 		arg.ID,
 		arg.Name,
 		arg.Icon,

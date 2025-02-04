@@ -1,4 +1,4 @@
--- name: SaveEvent :exec
+-- name: UpsertEvent :exec
 INSERT INTO
     events (
         id,

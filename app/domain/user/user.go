@@ -15,7 +15,8 @@ type User struct {
 	email string
 	password string
 	icon string
-	groupID []string
+	groupIDs []string
+	eventIDs []string
 }
 
 func Reconstruct(
@@ -25,7 +26,8 @@ func Reconstruct(
     email string,
 	password string,
 	icon string,
-	groupID []string,
+	groupIDs []string,
+	eventIDs []string,
 ) (*User, error) {
 	return newUser(
 		id,
@@ -34,7 +36,8 @@ func Reconstruct(
         email,
 		password,
 		icon,
-		groupID,
+		groupIDs,
+		eventIDs,
 	)
 }
 
@@ -53,6 +56,7 @@ func NewUser(
 		password,
 		icon,
 		nil,
+		nil,
 	)
 }
 
@@ -63,7 +67,8 @@ func newUser(
     email string,
 	password string,
 	icon string,
-	groupID []string,
+	groupIDs []string,
+	eventIDs []string,
 ) (*User, error) {
 	// 名前のバリデーション
 	if utf8.RuneCountInString(lastName) < nameLengthMin || utf8.RuneCountInString(lastName) > nameLengthMax {
@@ -85,7 +90,8 @@ func newUser(
         email:        email,
 		password:     password,
 		icon:         icon,
-		groupID:      groupID,
+		groupIDs:      groupIDs,
+		eventIDs:     eventIDs,
     }, nil
 }
 
@@ -114,7 +120,11 @@ func (u *User) Icon() string {
 }
 
 func (u *User) GroupID() []string {
-    return u.groupID
+    return u.groupIDs
+}
+
+func (u *User) EventID() []string {
+    return u.eventIDs
 }
 
 const (

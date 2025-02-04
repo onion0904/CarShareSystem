@@ -1,4 +1,4 @@
--- name: SaveGroup :exec
+-- name: UpsertGroup :exec
 INSERT INTO
     `groups` (
         id,
@@ -71,10 +71,11 @@ ON DUPLICATE KEY UPDATE
     event_id = sqlc.arg(eventID);
 
 -- name: RemoveUserFromGroup :exec
-DELETE FROM
+DELETE FROM 
     group_users
-WHERE
-    group_id = sqlc.arg(groupID);
+WHERE 
+    group_id = ? AND user_id = ?;
+
 
 -- name: GetUserIDsByGroupID :many
 SELECT

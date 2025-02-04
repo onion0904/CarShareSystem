@@ -10,7 +10,8 @@ import (
 type Group struct {
 	id string
 	name string
-	usersID []string
+	userIDs []string
+	eventIDs []string
 	icon string
 }
 
@@ -18,26 +19,30 @@ type Group struct {
 func Reconstruct(
 	id string,
 	name string,
-	usersID []string,
+	userIDs []string,
+	eventIDs []string,
 	icon string,
 ) (*Group, error) {
 	return newGroup(
 		id,
 		name,
-		usersID,
+		userIDs,
+		eventIDs,
 		icon,
 	)
 }
 
 func NewGroup(
 	name string,
-	usersID []string,
+	userIDs []string,
+	eventIDs []string,
 	icon string,
 ) (*Group, error) {
 	return newGroup(
 		ulid.NewUlid(),
 		name,
-		usersID,
+		userIDs,
+		eventIDs,
 		icon,
 	)
 }
@@ -45,7 +50,8 @@ func NewGroup(
 func newGroup(
 	id string,
 	name string,
-	usersID []string,
+	userIDs []string,
+	eventIDs []string,
 	icon string,
 ) (*Group, error) {
 	// ownerIDのバリデーション
@@ -64,7 +70,8 @@ func newGroup(
 	return &Group{
 		id:          id,
 		name:        name,
-		usersID:     usersID,
+		userIDs:     userIDs,
+		eventIDs:    eventIDs,
 		icon:        icon,
 	}, nil
 }
@@ -78,7 +85,11 @@ func (p *Group) Name() string {
 }
 
 func (p *Group) UsersID() []string {
-	return p.usersID
+	return p.userIDs
+}
+
+func (p *Group) EventsID() []string {
+    return p.eventIDs
 }
 
 func (p *Group) Icon() string {
