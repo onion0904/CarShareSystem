@@ -66,14 +66,16 @@ type ComplexityRoot struct {
 
 	Group struct {
 		CreatedAt func(childComplexity int) int
+		EventIDs  func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Icon      func(childComplexity int) int
 		Name      func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
-		Users     func(childComplexity int) int
+		UserIDs   func(childComplexity int) int
 	}
 
 	Mutation struct {
+		AddEventToGroup     func(childComplexity int, groupID string, eventID string) int
 		AddUserToGroup      func(childComplexity int, groupID string, userID string) int
 		CreateEvent         func(childComplexity int, input model.CreateEventInput) int
 		CreateGroup         func(childComplexity int, input model.CreateGroupInput) int
@@ -91,7 +93,7 @@ type ComplexityRoot struct {
 		Event         func(childComplexity int, id string) int
 		Events        func(childComplexity int) int
 		EventsByGroup func(childComplexity int, groupID string) int
-		EventsByMonth func(childComplexity int, input model.MonthlyEvent) int
+		EventsByMonth func(childComplexity int, input model.MonthlyEventInput) int
 		EventsByUser  func(childComplexity int, userID string) int
 		Group         func(childComplexity int, id string) int
 		Groups        func(childComplexity int) int
@@ -102,9 +104,9 @@ type ComplexityRoot struct {
 	User struct {
 		CreatedAt func(childComplexity int) int
 		Email     func(childComplexity int) int
-		Events    func(childComplexity int) int
+		EventIDs  func(childComplexity int) int
 		FirstName func(childComplexity int) int
-		Groups    func(childComplexity int) int
+		GroupIDs  func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Icon      func(childComplexity int) int
 		LastName  func(childComplexity int) int
@@ -122,6 +124,7 @@ type MutationResolver interface {
 	DeleteGroup(ctx context.Context, id string) (bool, error)
 	AddUserToGroup(ctx context.Context, groupID string, userID string) (*model.Group, error)
 	RemoveUserFromGroup(ctx context.Context, groupID string, userID string) (*model.Group, error)
+	AddEventToGroup(ctx context.Context, groupID string, eventID string) (*model.Group, error)
 	CreateEvent(ctx context.Context, input model.CreateEventInput) (*model.Event, error)
 	UpdateEvent(ctx context.Context, id string, input model.UpdateEventInput) (*model.Event, error)
 	DeleteEvent(ctx context.Context, id string) (bool, error)
@@ -135,7 +138,7 @@ type QueryResolver interface {
 	Events(ctx context.Context) ([]*model.Event, error)
 	EventsByUser(ctx context.Context, userID string) ([]*model.Event, error)
 	EventsByGroup(ctx context.Context, groupID string) ([]*model.Event, error)
-	EventsByMonth(ctx context.Context, input model.MonthlyEvent) ([]*model.Event, error)
+	EventsByMonth(ctx context.Context, input model.MonthlyEventInput) ([]*model.Event, error)
 }
 
 type executableSchema struct {
@@ -255,6 +258,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Group.CreatedAt(childComplexity), true
 
+	case "Group.eventIDs":
+		if e.complexity.Group.EventIDs == nil {
+			break
+		}
+
+		return e.complexity.Group.EventIDs(childComplexity), true
+
 	case "Group.id":
 		if e.complexity.Group.ID == nil {
 			break
@@ -283,12 +293,24 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Group.UpdatedAt(childComplexity), true
 
-	case "Group.users":
-		if e.complexity.Group.Users == nil {
+	case "Group.userIDs":
+		if e.complexity.Group.UserIDs == nil {
 			break
 		}
 
-		return e.complexity.Group.Users(childComplexity), true
+		return e.complexity.Group.UserIDs(childComplexity), true
+
+	case "Mutation.addEventToGroup":
+		if e.complexity.Mutation.AddEventToGroup == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addEventToGroup_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddEventToGroup(childComplexity, args["groupID"].(string), args["eventID"].(string)), true
 
 	case "Mutation.addUserToGroup":
 		if e.complexity.Mutation.AddUserToGroup == nil {
@@ -300,7 +322,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.AddUserToGroup(childComplexity, args["groupId"].(string), args["userId"].(string)), true
+		return e.complexity.Mutation.AddUserToGroup(childComplexity, args["groupID"].(string), args["userID"].(string)), true
 
 	case "Mutation.createEvent":
 		if e.complexity.Mutation.CreateEvent == nil {
@@ -384,7 +406,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.RemoveUserFromGroup(childComplexity, args["groupId"].(string), args["userId"].(string)), true
+		return e.complexity.Mutation.RemoveUserFromGroup(childComplexity, args["groupID"].(string), args["userID"].(string)), true
 
 	case "Mutation.updateEvent":
 		if e.complexity.Mutation.UpdateEvent == nil {
@@ -463,7 +485,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.EventsByMonth(childComplexity, args["input"].(model.MonthlyEvent)), true
+		return e.complexity.Query.EventsByMonth(childComplexity, args["input"].(model.MonthlyEventInput)), true
 
 	case "Query.eventsByUser":
 		if e.complexity.Query.EventsByUser == nil {
@@ -529,12 +551,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.Email(childComplexity), true
 
-	case "User.events":
-		if e.complexity.User.Events == nil {
+	case "User.eventIDs":
+		if e.complexity.User.EventIDs == nil {
 			break
 		}
 
-		return e.complexity.User.Events(childComplexity), true
+		return e.complexity.User.EventIDs(childComplexity), true
 
 	case "User.firstName":
 		if e.complexity.User.FirstName == nil {
@@ -543,12 +565,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.FirstName(childComplexity), true
 
-	case "User.groups":
-		if e.complexity.User.Groups == nil {
+	case "User.groupIDs":
+		if e.complexity.User.GroupIDs == nil {
 			break
 		}
 
-		return e.complexity.User.Groups(childComplexity), true
+		return e.complexity.User.GroupIDs(childComplexity), true
 
 	case "User.id":
 		if e.complexity.User.ID == nil {
@@ -596,7 +618,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateEventInput,
 		ec.unmarshalInputCreateGroupInput,
 		ec.unmarshalInputCreateUserInput,
-		ec.unmarshalInputMonthlyEvent,
+		ec.unmarshalInputMonthlyEventInput,
 		ec.unmarshalInputUpdateEventInput,
 		ec.unmarshalInputUpdateGroupInput,
 		ec.unmarshalInputUpdateUserInput,
@@ -716,6 +738,47 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
+func (ec *executionContext) field_Mutation_addEventToGroup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	arg0, err := ec.field_Mutation_addEventToGroup_argsGroupID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["groupID"] = arg0
+	arg1, err := ec.field_Mutation_addEventToGroup_argsEventID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["eventID"] = arg1
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_addEventToGroup_argsGroupID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("groupID"))
+	if tmp, ok := rawArgs["groupID"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_addEventToGroup_argsEventID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("eventID"))
+	if tmp, ok := rawArgs["eventID"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Mutation_addUserToGroup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -723,20 +786,20 @@ func (ec *executionContext) field_Mutation_addUserToGroup_args(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	args["groupId"] = arg0
+	args["groupID"] = arg0
 	arg1, err := ec.field_Mutation_addUserToGroup_argsUserID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
-	args["userId"] = arg1
+	args["userID"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_Mutation_addUserToGroup_argsGroupID(
 	ctx context.Context,
 	rawArgs map[string]interface{},
 ) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("groupId"))
-	if tmp, ok := rawArgs["groupId"]; ok {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("groupID"))
+	if tmp, ok := rawArgs["groupID"]; ok {
 		return ec.unmarshalNString2string(ctx, tmp)
 	}
 
@@ -748,8 +811,8 @@ func (ec *executionContext) field_Mutation_addUserToGroup_argsUserID(
 	ctx context.Context,
 	rawArgs map[string]interface{},
 ) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-	if tmp, ok := rawArgs["userId"]; ok {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+	if tmp, ok := rawArgs["userID"]; ok {
 		return ec.unmarshalNString2string(ctx, tmp)
 	}
 
@@ -902,20 +965,20 @@ func (ec *executionContext) field_Mutation_removeUserFromGroup_args(ctx context.
 	if err != nil {
 		return nil, err
 	}
-	args["groupId"] = arg0
+	args["groupID"] = arg0
 	arg1, err := ec.field_Mutation_removeUserFromGroup_argsUserID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
-	args["userId"] = arg1
+	args["userID"] = arg1
 	return args, nil
 }
 func (ec *executionContext) field_Mutation_removeUserFromGroup_argsGroupID(
 	ctx context.Context,
 	rawArgs map[string]interface{},
 ) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("groupId"))
-	if tmp, ok := rawArgs["groupId"]; ok {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("groupID"))
+	if tmp, ok := rawArgs["groupID"]; ok {
 		return ec.unmarshalNString2string(ctx, tmp)
 	}
 
@@ -927,8 +990,8 @@ func (ec *executionContext) field_Mutation_removeUserFromGroup_argsUserID(
 	ctx context.Context,
 	rawArgs map[string]interface{},
 ) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-	if tmp, ok := rawArgs["userId"]; ok {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+	if tmp, ok := rawArgs["userID"]; ok {
 		return ec.unmarshalNString2string(ctx, tmp)
 	}
 
@@ -1141,13 +1204,13 @@ func (ec *executionContext) field_Query_eventsByMonth_args(ctx context.Context, 
 func (ec *executionContext) field_Query_eventsByMonth_argsInput(
 	ctx context.Context,
 	rawArgs map[string]interface{},
-) (model.MonthlyEvent, error) {
+) (model.MonthlyEventInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNMonthlyEvent2githubᚗcomᚋonion0904ᚋappᚋpresentationᚋgraphqlᚋgraphᚋmodelᚐMonthlyEvent(ctx, tmp)
+		return ec.unmarshalNMonthlyEventInput2githubᚗcomᚋonion0904ᚋappᚋpresentationᚋgraphqlᚋgraphᚋmodelᚐMonthlyEventInput(ctx, tmp)
 	}
 
-	var zeroVal model.MonthlyEvent
+	var zeroVal model.MonthlyEventInput
 	return zeroVal, nil
 }
 
@@ -2063,8 +2126,8 @@ func (ec *executionContext) fieldContext_Group_updatedAt(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Group_users(ctx context.Context, field graphql.CollectedField, obj *model.Group) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Group_users(ctx, field)
+func (ec *executionContext) _Group_userIDs(ctx context.Context, field graphql.CollectedField, obj *model.Group) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Group_userIDs(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2077,7 +2140,7 @@ func (ec *executionContext) _Group_users(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Users, nil
+		return obj.UserIDs, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2089,41 +2152,63 @@ func (ec *executionContext) _Group_users(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.User)
+	res := resTmp.([]string)
 	fc.Result = res
-	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋonion0904ᚋappᚋpresentationᚋgraphqlᚋgraphᚋmodelᚐUserᚄ(ctx, field.Selections, res)
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Group_users(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Group_userIDs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Group",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_User_id(ctx, field)
-			case "lastName":
-				return ec.fieldContext_User_lastName(ctx, field)
-			case "firstName":
-				return ec.fieldContext_User_firstName(ctx, field)
-			case "email":
-				return ec.fieldContext_User_email(ctx, field)
-			case "password":
-				return ec.fieldContext_User_password(ctx, field)
-			case "icon":
-				return ec.fieldContext_User_icon(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_User_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_User_updatedAt(ctx, field)
-			case "groups":
-				return ec.fieldContext_User_groups(ctx, field)
-			case "events":
-				return ec.fieldContext_User_events(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Group_eventIDs(ctx context.Context, field graphql.CollectedField, obj *model.Group) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Group_eventIDs(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EventIDs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Group_eventIDs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Group",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2184,10 +2269,10 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 				return ec.fieldContext_User_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_User_updatedAt(ctx, field)
-			case "groups":
-				return ec.fieldContext_User_groups(ctx, field)
-			case "events":
-				return ec.fieldContext_User_events(ctx, field)
+			case "groupIDs":
+				return ec.fieldContext_User_groupIDs(ctx, field)
+			case "eventIDs":
+				return ec.fieldContext_User_eventIDs(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -2261,10 +2346,10 @@ func (ec *executionContext) fieldContext_Mutation_updateUser(ctx context.Context
 				return ec.fieldContext_User_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_User_updatedAt(ctx, field)
-			case "groups":
-				return ec.fieldContext_User_groups(ctx, field)
-			case "events":
-				return ec.fieldContext_User_events(ctx, field)
+			case "groupIDs":
+				return ec.fieldContext_User_groupIDs(ctx, field)
+			case "eventIDs":
+				return ec.fieldContext_User_eventIDs(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -2387,8 +2472,10 @@ func (ec *executionContext) fieldContext_Mutation_createGroup(ctx context.Contex
 				return ec.fieldContext_Group_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Group_updatedAt(ctx, field)
-			case "users":
-				return ec.fieldContext_Group_users(ctx, field)
+			case "userIDs":
+				return ec.fieldContext_Group_userIDs(ctx, field)
+			case "eventIDs":
+				return ec.fieldContext_Group_eventIDs(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Group", field.Name)
 		},
@@ -2456,8 +2543,10 @@ func (ec *executionContext) fieldContext_Mutation_updateGroup(ctx context.Contex
 				return ec.fieldContext_Group_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Group_updatedAt(ctx, field)
-			case "users":
-				return ec.fieldContext_Group_users(ctx, field)
+			case "userIDs":
+				return ec.fieldContext_Group_userIDs(ctx, field)
+			case "eventIDs":
+				return ec.fieldContext_Group_eventIDs(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Group", field.Name)
 		},
@@ -2545,7 +2634,7 @@ func (ec *executionContext) _Mutation_addUserToGroup(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().AddUserToGroup(rctx, fc.Args["groupId"].(string), fc.Args["userId"].(string))
+		return ec.resolvers.Mutation().AddUserToGroup(rctx, fc.Args["groupID"].(string), fc.Args["userID"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2580,8 +2669,10 @@ func (ec *executionContext) fieldContext_Mutation_addUserToGroup(ctx context.Con
 				return ec.fieldContext_Group_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Group_updatedAt(ctx, field)
-			case "users":
-				return ec.fieldContext_Group_users(ctx, field)
+			case "userIDs":
+				return ec.fieldContext_Group_userIDs(ctx, field)
+			case "eventIDs":
+				return ec.fieldContext_Group_eventIDs(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Group", field.Name)
 		},
@@ -2614,7 +2705,7 @@ func (ec *executionContext) _Mutation_removeUserFromGroup(ctx context.Context, f
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().RemoveUserFromGroup(rctx, fc.Args["groupId"].(string), fc.Args["userId"].(string))
+		return ec.resolvers.Mutation().RemoveUserFromGroup(rctx, fc.Args["groupID"].(string), fc.Args["userID"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2649,8 +2740,10 @@ func (ec *executionContext) fieldContext_Mutation_removeUserFromGroup(ctx contex
 				return ec.fieldContext_Group_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Group_updatedAt(ctx, field)
-			case "users":
-				return ec.fieldContext_Group_users(ctx, field)
+			case "userIDs":
+				return ec.fieldContext_Group_userIDs(ctx, field)
+			case "eventIDs":
+				return ec.fieldContext_Group_eventIDs(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Group", field.Name)
 		},
@@ -2663,6 +2756,77 @@ func (ec *executionContext) fieldContext_Mutation_removeUserFromGroup(ctx contex
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_removeUserFromGroup_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_addEventToGroup(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_addEventToGroup(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddEventToGroup(rctx, fc.Args["groupID"].(string), fc.Args["eventID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Group)
+	fc.Result = res
+	return ec.marshalNGroup2ᚖgithubᚗcomᚋonion0904ᚋappᚋpresentationᚋgraphqlᚋgraphᚋmodelᚐGroup(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_addEventToGroup(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Group_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Group_name(ctx, field)
+			case "icon":
+				return ec.fieldContext_Group_icon(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Group_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Group_updatedAt(ctx, field)
+			case "userIDs":
+				return ec.fieldContext_Group_userIDs(ctx, field)
+			case "eventIDs":
+				return ec.fieldContext_Group_eventIDs(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Group", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_addEventToGroup_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2942,10 +3106,10 @@ func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field g
 				return ec.fieldContext_User_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_User_updatedAt(ctx, field)
-			case "groups":
-				return ec.fieldContext_User_groups(ctx, field)
-			case "events":
-				return ec.fieldContext_User_events(ctx, field)
+			case "groupIDs":
+				return ec.fieldContext_User_groupIDs(ctx, field)
+			case "eventIDs":
+				return ec.fieldContext_User_eventIDs(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -3019,10 +3183,10 @@ func (ec *executionContext) fieldContext_Query_users(_ context.Context, field gr
 				return ec.fieldContext_User_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_User_updatedAt(ctx, field)
-			case "groups":
-				return ec.fieldContext_User_groups(ctx, field)
-			case "events":
-				return ec.fieldContext_User_events(ctx, field)
+			case "groupIDs":
+				return ec.fieldContext_User_groupIDs(ctx, field)
+			case "eventIDs":
+				return ec.fieldContext_User_eventIDs(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -3076,8 +3240,10 @@ func (ec *executionContext) fieldContext_Query_group(ctx context.Context, field 
 				return ec.fieldContext_Group_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Group_updatedAt(ctx, field)
-			case "users":
-				return ec.fieldContext_Group_users(ctx, field)
+			case "userIDs":
+				return ec.fieldContext_Group_userIDs(ctx, field)
+			case "eventIDs":
+				return ec.fieldContext_Group_eventIDs(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Group", field.Name)
 		},
@@ -3145,8 +3311,10 @@ func (ec *executionContext) fieldContext_Query_groups(_ context.Context, field g
 				return ec.fieldContext_Group_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Group_updatedAt(ctx, field)
-			case "users":
-				return ec.fieldContext_Group_users(ctx, field)
+			case "userIDs":
+				return ec.fieldContext_Group_userIDs(ctx, field)
+			case "eventIDs":
+				return ec.fieldContext_Group_eventIDs(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Group", field.Name)
 		},
@@ -3486,7 +3654,7 @@ func (ec *executionContext) _Query_eventsByMonth(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().EventsByMonth(rctx, fc.Args["input"].(model.MonthlyEvent))
+		return ec.resolvers.Query().EventsByMonth(rctx, fc.Args["input"].(model.MonthlyEventInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4033,8 +4201,8 @@ func (ec *executionContext) fieldContext_User_updatedAt(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _User_groups(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_User_groups(ctx, field)
+func (ec *executionContext) _User_groupIDs(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_groupIDs(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4047,7 +4215,7 @@ func (ec *executionContext) _User_groups(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Groups, nil
+		return obj.GroupIDs, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4059,40 +4227,26 @@ func (ec *executionContext) _User_groups(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Group)
+	res := resTmp.([]string)
 	fc.Result = res
-	return ec.marshalNGroup2ᚕᚖgithubᚗcomᚋonion0904ᚋappᚋpresentationᚋgraphqlᚋgraphᚋmodelᚐGroupᚄ(ctx, field.Selections, res)
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_User_groups(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_User_groupIDs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Group_id(ctx, field)
-			case "name":
-				return ec.fieldContext_Group_name(ctx, field)
-			case "icon":
-				return ec.fieldContext_Group_icon(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Group_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Group_updatedAt(ctx, field)
-			case "users":
-				return ec.fieldContext_Group_users(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Group", field.Name)
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _User_events(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_User_events(ctx, field)
+func (ec *executionContext) _User_eventIDs(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_eventIDs(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4105,7 +4259,7 @@ func (ec *executionContext) _User_events(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Events, nil
+		return obj.EventIDs, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4117,47 +4271,19 @@ func (ec *executionContext) _User_events(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Event)
+	res := resTmp.([]string)
 	fc.Result = res
-	return ec.marshalNEvent2ᚕᚖgithubᚗcomᚋonion0904ᚋappᚋpresentationᚋgraphqlᚋgraphᚋmodelᚐEventᚄ(ctx, field.Selections, res)
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_User_events(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_User_eventIDs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Event_id(ctx, field)
-			case "userID":
-				return ec.fieldContext_Event_userID(ctx, field)
-			case "together":
-				return ec.fieldContext_Event_together(ctx, field)
-			case "description":
-				return ec.fieldContext_Event_description(ctx, field)
-			case "year":
-				return ec.fieldContext_Event_year(ctx, field)
-			case "month":
-				return ec.fieldContext_Event_month(ctx, field)
-			case "day":
-				return ec.fieldContext_Event_day(ctx, field)
-			case "date":
-				return ec.fieldContext_Event_date(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Event_createdAt(ctx, field)
-			case "startDate":
-				return ec.fieldContext_Event_startDate(ctx, field)
-			case "endDate":
-				return ec.fieldContext_Event_endDate(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Event_updatedAt(ctx, field)
-			case "important":
-				return ec.fieldContext_Event_important(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Event", field.Name)
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -6033,7 +6159,7 @@ func (ec *executionContext) unmarshalInputCreateGroupInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "icon"}
+	fieldsInOrder := [...]string{"name", "userId", "icon"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -6047,6 +6173,13 @@ func (ec *executionContext) unmarshalInputCreateGroupInput(ctx context.Context, 
 				return it, err
 			}
 			it.Name = data
+		case "userId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserID = data
 		case "icon":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("icon"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -6115,8 +6248,8 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputMonthlyEvent(ctx context.Context, obj interface{}) (model.MonthlyEvent, error) {
-	var it model.MonthlyEvent
+func (ec *executionContext) unmarshalInputMonthlyEventInput(ctx context.Context, obj interface{}) (model.MonthlyEventInput, error) {
+	var it model.MonthlyEventInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -6461,8 +6594,13 @@ func (ec *executionContext) _Group(ctx context.Context, sel ast.SelectionSet, ob
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "users":
-			out.Values[i] = ec._Group_users(ctx, field, obj)
+		case "userIDs":
+			out.Values[i] = ec._Group_userIDs(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "eventIDs":
+			out.Values[i] = ec._Group_eventIDs(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -6560,6 +6698,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "removeUserFromGroup":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_removeUserFromGroup(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "addEventToGroup":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_addEventToGroup(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -6895,13 +7040,13 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "groups":
-			out.Values[i] = ec._User_groups(ctx, field, obj)
+		case "groupIDs":
+			out.Values[i] = ec._User_groupIDs(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "events":
-			out.Values[i] = ec._User_events(ctx, field, obj)
+		case "eventIDs":
+			out.Values[i] = ec._User_eventIDs(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -7430,8 +7575,8 @@ func (ec *executionContext) marshalNInt2int32(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) unmarshalNMonthlyEvent2githubᚗcomᚋonion0904ᚋappᚋpresentationᚋgraphqlᚋgraphᚋmodelᚐMonthlyEvent(ctx context.Context, v interface{}) (model.MonthlyEvent, error) {
-	res, err := ec.unmarshalInputMonthlyEvent(ctx, v)
+func (ec *executionContext) unmarshalNMonthlyEventInput2githubᚗcomᚋonion0904ᚋappᚋpresentationᚋgraphqlᚋgraphᚋmodelᚐMonthlyEventInput(ctx context.Context, v interface{}) (model.MonthlyEventInput, error) {
+	res, err := ec.unmarshalInputMonthlyEventInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -7448,6 +7593,38 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalNUpdateEventInput2githubᚗcomᚋonion0904ᚋappᚋpresentationᚋgraphqlᚋgraphᚋmodelᚐUpdateEventInput(ctx context.Context, v interface{}) (model.UpdateEventInput, error) {

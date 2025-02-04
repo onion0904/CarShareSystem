@@ -8,61 +8,103 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/onion0904/app/presentation/graphql/graph/model"
-	domain_user "github.com/onion0904/app/domain/user"
-	domain_group "github.com/onion0904/app/domain/group"
 	domain_event "github.com/onion0904/app/domain/event"
-
-	usecase_user "github.com/onion0904/app/usecase/user"
-	usecase_group "github.com/onion0904/app/usecase/group"
+	repo "github.com/onion0904/app/infrastructure/repository"
+	"github.com/onion0904/app/presentation/graphql/graph/model"
 	usecase_event "github.com/onion0904/app/usecase/event"
-
-	repo_user "github.com/onion0904/app/infrastructure/repository"
+	usecase_group "github.com/onion0904/app/usecase/group"
+	usecase_user "github.com/onion0904/app/usecase/user"
 )
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUserInput) (*model.User, error) {
-	userRepo := repo_user.NewUserRepository()
-	user := usecase_user.NewSaveUserUseCase(userRepo)
+	userRepo := repo.NewUserRepository()
+	create := usecase_user.NewSaveUserUseCase(userRepo)
 
 	DTO := usecase_user.SaveUseCaseDto{
-		LastName:    input.LastName,
-        FirstName:   input.FirstName,
-        Email:       input.Email,
-        Password:    input.Password,
-        Icon:        *input.Icon,
+		LastName:  input.LastName,
+		FirstName: input.FirstName,
+		Email:     input.Email,
+		Password:  input.Password,
+		Icon:      *input.Icon,
 	}
 
-	err := user.Run(ctx,DTO)
+	err := create.Run(ctx, DTO)
 	if err != nil {
 		return nil, err
 	}
-	return nil,nil
+	return nil, nil
 }
 
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input model.UpdateUserInput) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: UpdateUser - updateUser"))
+	userRepo := repo.NewUserRepository()
+	update := usecase_user.NewUpdateUserUseCase(userRepo)
+	DTO := usecase_user.UpdateUseCaseDto{
+		LastName:  *input.LastName,
+		FirstName: *input.FirstName,
+		Email:     *input.Email,
+		Icon:      *input.Icon,
+	}
+	err := update.Run(ctx, id, DTO)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 // DeleteUser is the resolver for the deleteUser field.
 func (r *mutationResolver) DeleteUser(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteUser - deleteUser"))
+	userRepo := repo.NewUserRepository()
+	delete := usecase_user.NewDeleteUseCase(userRepo)
+	err := delete.Run(ctx, id)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // CreateGroup is the resolver for the createGroup field.
 func (r *mutationResolver) CreateGroup(ctx context.Context, input model.CreateGroupInput) (*model.Group, error) {
-	panic(fmt.Errorf("not implemented: CreateGroup - createGroup"))
+	groupRepo := repo.NewGroupRepository()
+	create := usecase_group.NewSaveUseCase(groupRepo)
+
+	DTO := usecase_group.SaveUseCaseDto{
+		Name: input.Name,
+		Icon: *input.Icon,
+	}
+
+	err := create.Run(ctx, DTO)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 // UpdateGroup is the resolver for the updateGroup field.
 func (r *mutationResolver) UpdateGroup(ctx context.Context, id string, input model.UpdateGroupInput) (*model.Group, error) {
-	panic(fmt.Errorf("not implemented: UpdateGroup - updateGroup"))
+	groupRepo := repo.NewGroupRepository()
+	update := usecase_group.NewUpdateUseCase(groupRepo)
+	DTO := usecase_group.UpdateUseCaseDto{
+		Name: *input.Name,
+		Icon: *input.Icon,
+	}
+	err := update.Run(ctx, id, DTO)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 // DeleteGroup is the resolver for the deleteGroup field.
 func (r *mutationResolver) DeleteGroup(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteGroup - deleteGroup"))
+	groupRepo := repo.NewGroupRepository()
+	delete := usecase_group.NewDeleteUseCase(groupRepo)
+	err := delete.Run(ctx, id)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // AddUserToGroup is the resolver for the addUserToGroup field.
@@ -75,9 +117,26 @@ func (r *mutationResolver) RemoveUserFromGroup(ctx context.Context, groupID stri
 	panic(fmt.Errorf("not implemented: RemoveUserFromGroup - removeUserFromGroup"))
 }
 
+// AddEventToGroup is the resolver for the addEventToGroup field.
+func (r *mutationResolver) AddEventToGroup(ctx context.Context, groupID string, eventID string) (*model.Group, error) {
+	panic(fmt.Errorf("not implemented: AddEventToGroup - addEventToGroup"))
+}
+
 // CreateEvent is the resolver for the createEvent field.
 func (r *mutationResolver) CreateEvent(ctx context.Context, input model.CreateEventInput) (*model.Event, error) {
-	panic(fmt.Errorf("not implemented: CreateEvent - createEvent"))
+	eventRepo := repo.NewEventRepository()
+	create := usecase_event.NewEventUseCase(domain_event.NewEventDomainService(eventRepo))
+	DTO := usecase_event.AddEventUseCaseDTO{
+		UsersID:     input.UserID,
+		Together:    input.Together,
+		Description: input.Description,
+		Important:   input.Important,
+	}
+	err := create.Run(ctx, DTO)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 // UpdateEvent is the resolver for the updateEvent field.
@@ -87,7 +146,13 @@ func (r *mutationResolver) UpdateEvent(ctx context.Context, id string, input mod
 
 // DeleteEvent is the resolver for the deleteEvent field.
 func (r *mutationResolver) DeleteEvent(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteEvent - deleteEvent"))
+	eventRepo := repo.NewEventRepository()
+	delete := usecase_event.NewDeleteUseCase(eventRepo)
+	err := delete.Run(ctx, id)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // User is the resolver for the user field.
@@ -131,7 +196,7 @@ func (r *queryResolver) EventsByGroup(ctx context.Context, groupID string) ([]*m
 }
 
 // EventsByMonth is the resolver for the eventsByMonth field.
-func (r *queryResolver) EventsByMonth(ctx context.Context, input model.MonthlyEvent) ([]*model.Event, error) {
+func (r *queryResolver) EventsByMonth(ctx context.Context, input model.MonthlyEventInput) ([]*model.Event, error) {
 	panic(fmt.Errorf("not implemented: EventsByMonth - eventsByMonth"))
 }
 

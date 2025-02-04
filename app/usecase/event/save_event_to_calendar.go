@@ -6,12 +6,12 @@ import (
 )
 // eventUsecase 構造体
 type SaveEventUsecase struct {
-	eventService eventDomain.EventDomainService
+	eventService *eventDomain.EventDomainService
 }
 
 // NewCalendarUsecase ファクトリ関数
-func NewEventUsecase(
-	eventService eventDomain.EventDomainService,
+func NewEventUseCase(
+	eventService *eventDomain.EventDomainService,
 ) *SaveEventUsecase {
 	return &SaveEventUsecase{
 		eventService: eventService,
@@ -27,8 +27,8 @@ type AddEventUseCaseDTO struct {
 }
 
 
-// AddEvent メソッド: イベントを追加する
-func (uc *SaveEventUsecase) AddEvent(ctx context.Context, dto AddEventUseCaseDTO) error {	
+// イベントを追加する
+func (uc *SaveEventUsecase) Run(ctx context.Context, dto AddEventUseCaseDTO) error {	
 	event, err := eventDomain.NewEvent(dto.UsersID, dto.Together, dto.Description, dto.Important)
 	if err != nil {
 		return err

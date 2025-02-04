@@ -20,8 +20,9 @@ type CreateEventInput struct {
 }
 
 type CreateGroupInput struct {
-	Name string  `json:"name"`
-	Icon *string `json:"icon,omitempty"`
+	Name   string  `json:"name"`
+	UserID string  `json:"userId"`
+	Icon   *string `json:"icon,omitempty"`
 }
 
 type CreateUserInput struct {
@@ -54,10 +55,11 @@ type Group struct {
 	Icon      *string   `json:"icon,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
-	Users     []*User   `json:"users"`
+	UserIDs   []string  `json:"userIDs"`
+	EventIDs  []string  `json:"eventIDs"`
 }
 
-type MonthlyEvent struct {
+type MonthlyEventInput struct {
 	Year  *int32 `json:"year,omitempty"`
 	Month *int32 `json:"month,omitempty"`
 }
@@ -102,6 +104,6 @@ type User struct {
 	Icon      *string   `json:"icon,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
-	Groups    []*Group  `json:"groups"`
-	Events    []*Event  `json:"events"`
+	GroupIDs  []string  `json:"groupIDs"`
+	EventIDs  []string  `json:"eventIDs"`
 }

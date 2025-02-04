@@ -9,7 +9,7 @@ type SaveUseCase struct {
 	groupRepo groupDomain.GroupRepository
 }
 
-func NewSaveUserUseCase(
+func NewSaveUseCase(
 	groupRepo groupDomain.GroupRepository,
 ) *SaveUseCase {
 	return &SaveUseCase{

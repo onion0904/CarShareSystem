@@ -12,8 +12,8 @@ type User {
   icon: String
   createdAt: DateTime!
   updatedAt: DateTime!
-  groups: [Group!]!
-  events: [Event!]!
+  groupIDs: [String!]!
+  eventIDs: [String!]!
 }
 
 # Group型の定義
@@ -23,7 +23,8 @@ type Group {
   icon: String
   createdAt: DateTime!
   updatedAt: DateTime!
-  users: [User!]!
+  userIDs: [String!]!
+  eventIDs: [String!]!
 }
 
 # Event型の定義
@@ -58,8 +59,7 @@ type Query {
   events: [Event!]!
   eventsByUser(userId: String!): [Event!]!
   eventsByGroup(groupId: String!): [Event!]!
-  eventsByMonth(input: MonthlyEvent!): [Event!]!
-
+  eventsByMonth(input: MonthlyEventInput!): [Event!]!
 }
 
 # 入力型の定義
@@ -81,6 +81,7 @@ input UpdateUserInput {
 
 input CreateGroupInput {
   name: String!
+  userId: String!
   icon: String
 }
 
@@ -114,7 +115,7 @@ input UpdateEventInput {
   important: Boolean
 }
 
-input MonthlyEvent {
+input MonthlyEventInput {
   year: Int
   month: Int
 } 
@@ -130,8 +131,9 @@ type Mutation {
   createGroup(input: CreateGroupInput!): Group!
   updateGroup(id: String!, input: UpdateGroupInput!): Group!
   deleteGroup(id: String!): Boolean!
-  addUserToGroup(groupId: String!, userId: String!): Group!
-  removeUserFromGroup(groupId: String!, userId: String!): Group!
+  addUserToGroup(groupID: String!, userID: String!): Group!
+  removeUserFromGroup(groupID: String!, userID: String!): Group!
+  addEventToGroup(groupID: String!, eventID: String!): Group!
 
   # イベント関連
   createEvent(input: CreateEventInput!): Event!

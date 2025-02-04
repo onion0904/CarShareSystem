@@ -1,13 +1,3 @@
--- name: UpdateGroup :exec
-UPDATE
-    `groups`
-SET
-    name = sqlc.arg(name),
-    icon = sqlc.arg(icon),
-    updated_at = NOW()
-WHERE
-    id = sqlc.arg(id);
-
 -- name: SaveGroup :exec
 INSERT INTO
     `groups` (
@@ -30,31 +20,11 @@ UPDATE
     icon = sqlc.arg(icon),
     updated_at = NOW();
 
--- name: AddGroupIDToUser :exec
-INSERT INTO
-    group_users (group_id, user_id)
-VALUES
-    (
-        sqlc.arg(groupID),
-        sqlc.arg(userID)
-    )
-ON DUPLICATE KEY UPDATE
-    group_id = sqlc.arg(groupID), 
-    user_id = sqlc.arg(userID);
-
 -- name: DeleteGroup :exec
 DELETE FROM
     `groups`
 WHERE
     id = sqlc.arg(groupID);
-
--- name: FindAllUserID :many
-SELECT
-    user_id
-FROM
-    group_users
-WHERE
-    group_id = sqlc.arg(groupID);
 
 -- name: FindGroup :one
 SELECT
@@ -68,10 +38,57 @@ FROM
 WHERE
     id = sqlc.arg(groupID);
 
--- name: FindGroupName :one
+-- name: FindAllUserID :many
 SELECT
-    name
+    user_id
 FROM
-    `groups`
+    group_users
 WHERE
-    id = sqlc.arg(groupID);
+    group_id = sqlc.arg(groupID);
+
+-- name: AddUserToGroup :exec
+INSERT INTO
+    group_users (group_id, user_id)
+VALUES
+    (
+        sqlc.arg(groupID),
+        sqlc.arg(userID)
+    )
+ON DUPLICATE KEY UPDATE
+    group_id = sqlc.arg(groupID), 
+    user_id = sqlc.arg(userID);
+
+-- name: AddEventToGroup :exec
+INSERT INTO
+    group_events (group_id, event_id)
+VALUES
+    (
+        sqlc.arg(groupID),
+        sqlc.arg(eventID)
+    )
+ON DUPLICATE KEY UPDATE
+    group_id = sqlc.arg(groupID), 
+    event_id = sqlc.arg(eventID);
+
+-- name: RemoveUserFromGroup :exec
+DELETE FROM
+    group_users
+WHERE
+    group_id = sqlc.arg(groupID);
+
+-- name: GetUserIDsByGroupID :many
+SELECT
+    gu.user_id
+FROM
+    group_users gu
+WHERE
+    gu.group_id = sqlc.arg(groupID);
+
+-- name: GetEventIDsByGroupID :many
+SELECT
+    ge.event_id
+FROM
+    group_events ge
+WHERE
+    ge.group_id = sqlc.arg(groupID);
+

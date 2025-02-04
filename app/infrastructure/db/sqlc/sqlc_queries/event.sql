@@ -2,7 +2,7 @@
 INSERT INTO
     events (
         id,
-        users_id,
+        user_id,
         together,
         description,
         year,
@@ -18,7 +18,7 @@ INSERT INTO
 VALUES
     (
         sqlc.arg(id),
-        sqlc.arg(users_id),
+        sqlc.arg(user_id),
         sqlc.arg(together),
         sqlc.arg(description),
         sqlc.arg(year),
@@ -32,7 +32,7 @@ VALUES
         sqlc.arg(important)
     ) ON DUPLICATE KEY
 UPDATE
-    users_id = sqlc.arg(users_id),
+    user_id = sqlc.arg(user_id),
     together = sqlc.arg(together),
     description = sqlc.arg(description),
     year = sqlc.arg(year),
@@ -49,7 +49,7 @@ UPDATE
 DELETE FROM
     events
 WHERE
-    id = ?;
+    id = sqlc.arg(eventID);
 
 -- name: FindEvent :one
 SELECT
@@ -57,7 +57,7 @@ SELECT
 FROM
     events
 WHERE
-    id = ?;
+    id = sqlc.arg(eventID);
 
 -- name: FindMonthEventID :many
 SELECT
@@ -65,4 +65,4 @@ SELECT
 FROM
     events
 WHERE
-    year = ? AND month = ?
+    year = sqlc.arg(year) AND month = sqlc.arg(month)

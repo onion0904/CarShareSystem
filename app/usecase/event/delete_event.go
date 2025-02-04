@@ -9,7 +9,7 @@ type DeleteEventUseCase struct {
 	eventRepo eventDomain.EventRepository
 }
 
-func NewDeleteEventUseCase(
+func NewDeleteUseCase(
 	eventRepo eventDomain.EventRepository,
 ) *DeleteEventUseCase {
 	return &DeleteEventUseCase{

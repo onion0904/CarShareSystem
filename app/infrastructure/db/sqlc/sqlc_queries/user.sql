@@ -1,18 +1,3 @@
--- name: UserFindById :one
-SELECT
-    id,
-    last_name,
-    first_name,
-    email,
-    password,
-    icon,
-    created_at,
-    updated_at
-FROM
-    users
-WHERE
-    id = ?;
-
 -- name: UpsertUser :exec
 INSERT INTO
     users (
@@ -41,11 +26,20 @@ UPDATE
     icon = sqlc.arg(icon),
     updated_at = NOW();
 
--- name: UserFindAll :many
+-- name: FindUser :one
 SELECT
-    *
+    id,
+    last_name,
+    first_name,
+    email,
+    password,
+    icon,
+    created_at,
+    updated_at
 FROM
-    users;
+    users
+WHERE
+    id = ?;
 
 -- name: DeleteUser :exec
 DELETE FROM
@@ -61,26 +55,19 @@ SELECT
         WHERE email = ? AND password = ?
     ) AS exists_user;
 
--- name: FindAllGroupID :many
+-- name: GetGroupIDsByUserID :many
 SELECT
     gu.group_id
 FROM
     group_users gu
 WHERE
-    gu.user_id = ?;
+    gu.user_id = sqlc.arg(userID);
 
--- name: UserFindByEmail :one
+-- name: GetEventIDsByUserID :many
 SELECT
-    *
+    ue.event_id
 FROM
-    users
+    user_events ue
 WHERE
-    email = ?;
+    ue.user_id = sqlc.arg(userID);
 
--- name: UserFindName :one
-SELECT
-    CONCAT(first_name, ' ', last_name) AS full_name
-FROM
-    users
-WHERE
-    id = ?;
