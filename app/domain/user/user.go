@@ -5,6 +5,7 @@ import (
 	"unicode/utf8"
 	"github.com/onion0904/go-pkg/ulid"
 	errDomain "github.com/onion0904/app/domain/error"
+	"time"
 )
 
 
@@ -17,6 +18,8 @@ type User struct {
 	icon string
 	groupIDs []string
 	eventIDs []string
+	createdAt time.Time
+	updatedAt time.Time
 }
 
 func Reconstruct(
@@ -90,7 +93,7 @@ func newUser(
         email:        email,
 		password:     password,
 		icon:         icon,
-		groupIDs:      groupIDs,
+		groupIDs:     groupIDs,
 		eventIDs:     eventIDs,
     }, nil
 }
@@ -119,12 +122,28 @@ func (u *User) Icon() string {
 	return u.icon
 }
 
-func (u *User) GroupID() []string {
+func (u *User) GroupIDs() []string {
     return u.groupIDs
 }
 
-func (u *User) EventID() []string {
+func (u *User) EventIDs() []string {
     return u.eventIDs
+}
+
+func (u *User) CreatedAt() time.Time {
+    return u.createdAt
+}
+
+func (u *User) UpdatedAt() time.Time {
+    return u.updatedAt
+}
+
+func (u *User) SetCreatedAt(t time.Time){
+	u.createdAt = t
+}
+
+func (u *User) SetUpdatedAt(t time.Time){
+    u.updatedAt = t
 }
 
 const (

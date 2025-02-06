@@ -23,11 +23,12 @@ type SaveUseCaseDto struct {
 	Icon string
 }
 
-func (uc *SaveUseCase) Run(ctx context.Context, dto SaveUseCaseDto) error {
+func (uc *SaveUseCase) Run(ctx context.Context, dto SaveUseCaseDto) (*groupDomain.Group,error) {
 	// dtoからuserへ変換
 	group, err := groupDomain.NewGroup(dto.Name, dto.UsersID, dto.Icon)
 	if err != nil {
-		return err
+		return nil,err
 	}
-	return uc.groupRepo.Save(ctx, group)
+	err = uc.groupRepo.Save(ctx, group)
+	return uc.groupRepo.FindGroup(ctx,group.ID())
 }

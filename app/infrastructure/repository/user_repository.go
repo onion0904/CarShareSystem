@@ -24,8 +24,7 @@ func (ur *userRepository)Update(ctx context.Context, user *user.User) error {
         LastName:  user.LastName(),
         FirstName: user.FirstName(),
         Email:     user.Email(),
-		// iconがある場合urlを代入,ない場合はnullを代入代入
-		Icon:      sql.NullString{String: user.Icon(), Valid: user.Icon()!= ""},
+		Icon:      user.Icon(),
 		}); err != nil {
 		return err
 	}
@@ -39,56 +38,69 @@ func (ur *userRepository)Save(ctx context.Context, user *user.User) error {
         LastName:  user.LastName(),
         FirstName: user.FirstName(),
         Email:     user.Email(),
-		// iconがある場合urlを代入,ない場合はnullを代入代入
-		Icon:      sql.NullString{String: user.Icon(), Valid: user.Icon()!= ""},
+		Icon:      user.Icon(),
 		}); err != nil {
 		return err
 	}
 	return nil
 }
     
-func (ur *userRepository)FindUser(ctx context.Context, UserID string) (*user.User, error) {
-	query := db.GetQuery(ctx)
+func (ur *userRepository) FindUser(ctx context.Context, UserID string) (*user.User, error) {
+    DB := db.GetDB() // DB インスタンス取得
+    tx, err := DB.BeginTx(ctx, nil) // トランザクション開始
+    if err != nil {
+        return nil, err
+    }
+    defer tx.Rollback() // エラー時のロールバック保証
 
-	u, err := query.FindUser(ctx, UserID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errDomain.NewError("User not found")
-		}
-		return nil, err
-	}
+    query := db.GetQuery(ctx).WithTx(tx) // トランザクション適用
 
-	//Reconstructではstringしか使えないため
-	icon := ""
-	if u.Icon.Valid {
-		icon = u.Icon.String
-	}
-
-	groupIDs, err := query.GetGroupIDsByUserID(ctx, UserID)
-	if err != nil {
-		return nil, err
-	}
-
-	eventIDs, err := query.GetEventIDsByUserID(ctx, UserID)
-	if err!= nil {
+    // ユーザー情報の取得
+    u, err := query.FindUser(ctx, UserID)
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return nil, errDomain.NewError("User not found")
+        }
         return nil, err
     }
 
-	nu, err := user.Reconstruct(
-		u.ID,
+    // ユーザーの所属グループID取得
+    groupIDs, err := query.GetGroupIDsByUserID(ctx, UserID)
+    if err != nil {
+        return nil, err
+    }
+
+    // ユーザーの関連イベントID取得
+    eventIDs, err := query.GetEventIDsByUserID(ctx, UserID)
+    if err != nil {
+        return nil, err
+    }
+
+    // ユーザーをドメインモデルとして再構築
+    nu, err := user.Reconstruct(
+        u.ID,
         u.LastName,
         u.FirstName,
         u.Email,
-		u.Password,
-        icon,
-		groupIDs,
-		eventIDs,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return nu, nil
+        u.Password,
+        u.Icon,
+        groupIDs,
+        eventIDs,
+    )
+    if err != nil {
+        return nil, err
+    }
+    nu.SetCreatedAt(u.CreatedAt)
+    nu.SetUpdatedAt(u.UpdatedAt)
+
+    // コミット
+    if err := tx.Commit(); err != nil {
+        return nil, err
+    }
+
+    return nu, nil
 }
+
 	
 func (ur *userRepository)Delete(ctx context.Context, UserID string) error {
 	query := db.GetQuery(ctx)

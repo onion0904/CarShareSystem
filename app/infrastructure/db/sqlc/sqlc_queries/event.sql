@@ -59,7 +59,7 @@ FROM
 WHERE
     id = sqlc.arg(eventID);
 
--- name: FindMonthEventID :many
+-- name: FindMonthEventIDs :many
 SELECT
     id
 FROM

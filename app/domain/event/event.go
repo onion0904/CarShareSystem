@@ -19,6 +19,8 @@ type Event struct {
 	month int32
 	day int32
 	date time.Time
+	createdAt time.Time
+	updatedAt time.Time
 	startDate time.Time
 	endDate time.Time
 	important bool
@@ -147,6 +149,22 @@ func (c *Event) Date() time.Time {
     return c.date
 }
 
+func (c *Event) CreatedAt() time.Time {
+    return c.createdAt
+}
+
+func (c *Event) UpdatedAt() time.Time {
+    return c.updatedAt
+}
+
+func (u *Event) SetCreatedAt(t time.Time){
+	u.createdAt = t
+}
+
+func (u *Event) SetUpdatedAt(t time.Time){
+    u.updatedAt = t
+}
+
 func (c *Event) StartDate() time.Time {
     return c.startDate
 }
@@ -158,7 +176,6 @@ func (c *Event) EndDate() time.Time {
 func (c *Event) Important() bool {
     return c.important
 }
-
 
 const (
 	nameLengthMin = 1

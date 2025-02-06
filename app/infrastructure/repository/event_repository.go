@@ -74,13 +74,15 @@ func (er *eventRepository)FindEvent(ctx context.Context, eventID string) (*event
 	if err != nil {
 		return nil, err
 	}
+	ne.SetCreatedAt(e.CreatedAt)
+	ne.SetUpdatedAt(e.UpdatedAt)
 	return ne, nil
 }
 	
-func (er *eventRepository)FindMonthEventID(ctx context.Context, year int32, month int32) ([]string, error) {
+func (er *eventRepository)FindMonthEventIDs(ctx context.Context, year int32, month int32) ([]string, error) {
 	query := db.GetQuery(ctx)
 
-	eventIDs, err := query.FindMonthEventID(ctx, dbgen.FindMonthEventIDParams{
+	eventIDs, err := query.FindMonthEventIDs(ctx, dbgen.FindMonthEventIDsParams{
 		Year:  year,
         Month: month,
 	})

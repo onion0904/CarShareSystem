@@ -4,6 +4,7 @@ import (
 	"unicode/utf8"
 	"github.com/onion0904/go-pkg/ulid"
 	errDomain "github.com/onion0904/app/domain/error"
+	"time"
 )
 
 
@@ -13,6 +14,8 @@ type Group struct {
 	userIDs []string
 	eventIDs []string
 	icon string
+	createdAt time.Time
+	updatedAt time.Time
 }
 
 
@@ -35,14 +38,13 @@ func Reconstruct(
 func NewGroup(
 	name string,
 	userIDs []string,
-	eventIDs []string,
 	icon string,
 ) (*Group, error) {
 	return newGroup(
 		ulid.NewUlid(),
 		name,
 		userIDs,
-		eventIDs,
+		nil,
 		icon,
 	)
 }
@@ -62,10 +64,6 @@ func newGroup(
 	if utf8.RuneCountInString(name) < nameLengthMin || utf8.RuneCountInString(name) > nameLengthMax {
 		return nil, errDomain.NewError("グループ名が不正です。")
 	}
-	// アイコンのバリデーションとデフォルトの設定
-	if icon == "" {
-		icon = "defaultIcon"
-	}
 
 	return &Group{
 		id:          id,
@@ -84,16 +82,32 @@ func (p *Group) Name() string {
 	return p.name
 }
 
-func (p *Group) UsersID() []string {
+func (p *Group) UserIDs() []string {
 	return p.userIDs
 }
 
-func (p *Group) EventsID() []string {
+func (p *Group) EventIDs() []string {
     return p.eventIDs
 }
 
 func (p *Group) Icon() string {
     return p.icon
+}
+
+func (p *Group) CreatedAt() time.Time {
+    return p.createdAt
+}
+
+func (p *Group) UpdatedAt() time.Time {
+    return p.updatedAt
+}
+
+func (u *Group) SetCreatedAt(t time.Time){
+	u.createdAt = t
+}
+
+func (u *Group) SetUpdatedAt(t time.Time){
+    u.updatedAt = t
 }
 
 

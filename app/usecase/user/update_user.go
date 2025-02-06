@@ -24,15 +24,16 @@ type UpdateUseCaseDto struct {
 	Icon string
 }
 
-func (uc *UpdateUseCase) Run(ctx context.Context, id string, dto UpdateUseCaseDto) error {
+func (uc *UpdateUseCase) Run(ctx context.Context, id string, dto UpdateUseCaseDto) (*userDomain.User,error) {
 	// dtoからuserへ変換
 	user ,err := uc.userRepo.FindUser(ctx,id)
 	if err != nil {
-        return err
+        return nil,err
     }
-	nuser, err := userDomain.Reconstruct(id,dto.LastName, dto.FirstName, dto.Email, user.Password(), dto.Icon,user.GroupID())
+	nuser, err := userDomain.Reconstruct(id,dto.LastName, dto.FirstName, dto.Email, user.Password(), dto.Icon,user.GroupIDs(),user.EventIDs())
 	if err != nil {
-		return err
+		return nil,err
 	}
-	return uc.userRepo.Update(ctx, nuser)
+	err = uc.userRepo.Update(ctx, nuser)
+	return uc.userRepo.FindUser(ctx,user.ID())
 }

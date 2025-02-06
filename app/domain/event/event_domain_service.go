@@ -24,7 +24,7 @@ func (c *EventDomainService) SaveEventService(ctx context.Context, event *Event)
 	}
 
 	// 現在のイベント数を取得
-	events, err := c.EventRepo.FindMonthEventID(ctx, event.year, event.month)
+	events, err := c.EventRepo.FindMonthEventIDs(ctx, event.year, event.month)
 	if err != nil {
 		return err
 	}

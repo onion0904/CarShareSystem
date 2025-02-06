@@ -18,15 +18,15 @@ func NewFindMonthEventUseCase(
 }
 
 type FindMonthEventUseCaseDto struct {
-	eventIDs []string
+	EventIDs []string
 }
 
 func (uc *FindMonthEventUseCase) Run(ctx context.Context, year int32, month int32) (*FindMonthEventUseCaseDto, error) {
-	eventIDs, err := uc.eventRepo.FindMonthEventID(ctx, year, month)
+	eventIDs, err := uc.eventRepo.FindMonthEventIDs(ctx, year, month)
 	if err != nil {
 		return nil, err
 	}
 	return &FindMonthEventUseCaseDto{
-        eventIDs: eventIDs,
+        EventIDs: eventIDs,
     }, nil
 }

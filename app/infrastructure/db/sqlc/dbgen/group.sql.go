@@ -7,7 +7,6 @@ package sqlc
 
 import (
 	"context"
-	"database/sql"
 )
 
 const addEventToGroup = `-- name: AddEventToGroup :exec
@@ -76,38 +75,6 @@ WHERE
 func (q *Queries) DeleteGroup(ctx context.Context, groupid string) error {
 	_, err := q.db.ExecContext(ctx, deleteGroup, groupid)
 	return err
-}
-
-const findAllUserID = `-- name: FindAllUserID :many
-SELECT
-    user_id
-FROM
-    group_users
-WHERE
-    group_id = ?
-`
-
-func (q *Queries) FindAllUserID(ctx context.Context, groupid string) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, findAllUserID, groupid)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []string
-	for rows.Next() {
-		var user_id string
-		if err := rows.Scan(&user_id); err != nil {
-			return nil, err
-		}
-		items = append(items, user_id)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const findGroup = `-- name: FindGroup :one
@@ -243,7 +210,7 @@ UPDATE
 type UpsertGroupParams struct {
 	ID   string
 	Name string
-	Icon sql.NullString
+	Icon string
 }
 
 func (q *Queries) UpsertGroup(ctx context.Context, arg UpsertGroupParams) error {

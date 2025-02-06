@@ -23,7 +23,7 @@ func (gr *groupRepository)Update(ctx context.Context, group *group.Group) error 
 	
 	err := query.UpsertGroup(ctx,dbgen.UpsertGroupParams{
 		Name: group.Name(), 
-		Icon: sql.NullString{String: group.Icon(), Valid: group.Icon()!= ""}, 
+		Icon: group.Icon(), 
 		ID: group.ID(),
 	})
 	if err!= nil {
@@ -38,7 +38,7 @@ func (gr *groupRepository)Save(ctx context.Context ,group *group.Group) error {
 	err := query.UpsertGroup(ctx, dbgen.UpsertGroupParams{
         ID:   group.ID(),
         Name: group.Name(), 
-        Icon: sql.NullString{String: group.Icon(), Valid: group.Icon()!= ""},
+        Icon: group.Icon(),
     })
 	if err!= nil {
         return err
@@ -56,16 +56,6 @@ func (gr *groupRepository)Delete(ctx context.Context , groupID string) error {
 	return nil
 }
 	
-func (gr *groupRepository)FindAllUserID(ctx context.Context,groupID string) ([]string,error) {
-	query := db.GetQuery(ctx)
-
-	userIDs, err := query.FindAllUserID(ctx, groupID)
-	if err!= nil {
-        return nil, err
-    }
-	return userIDs, nil
-}
-	
 func (gr *groupRepository)FindGroup(ctx context.Context,groupID string) (*group.Group, error) {
 	query := db.GetQuery(ctx)
 	
@@ -76,11 +66,6 @@ func (gr *groupRepository)FindGroup(ctx context.Context,groupID string) (*group.
 			return nil, errDomain.NewError("Group not found")
 		}
 		return nil, err
-	}
-
-	icon := ""
-	if g.Icon.Valid {
-		icon = g.Icon.String
 	}
 
 	userIDs, err := query.GetUserIDsByGroupID(ctx, groupID)
@@ -98,11 +83,13 @@ func (gr *groupRepository)FindGroup(ctx context.Context,groupID string) (*group.
 		g.Name,
 		userIDs,
 		eventIDs,
-		icon,
+		g.Icon,
 	)
 	if err != nil {
 		return nil, err
 	}
+	ng.SetCreatedAt(g.CreatedAt)
+	ng.SetUpdatedAt(g.UpdatedAt)
 	return ng, nil
 }
 

@@ -24,7 +24,7 @@ func (q *Queries) DeleteEvent(ctx context.Context, eventid string) error {
 
 const findEvent = `-- name: FindEvent :one
 SELECT
-    id, user_id, together, description, year, month, day, date, created_at, start_date, end_date, updated_at, important
+    id, user_id, together, description, year, month, day, date, created_at, updated_at, start_date, end_date, important
 FROM
     events
 WHERE
@@ -44,15 +44,15 @@ func (q *Queries) FindEvent(ctx context.Context, eventid string) (Event, error) 
 		&i.Day,
 		&i.Date,
 		&i.CreatedAt,
+		&i.UpdatedAt,
 		&i.StartDate,
 		&i.EndDate,
-		&i.UpdatedAt,
 		&i.Important,
 	)
 	return i, err
 }
 
-const findMonthEventID = `-- name: FindMonthEventID :many
+const findMonthEventIDs = `-- name: FindMonthEventIDs :many
 SELECT
     id
 FROM
@@ -61,13 +61,13 @@ WHERE
     year = ? AND month = ?
 `
 
-type FindMonthEventIDParams struct {
+type FindMonthEventIDsParams struct {
 	Year  int32
 	Month int32
 }
 
-func (q *Queries) FindMonthEventID(ctx context.Context, arg FindMonthEventIDParams) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, findMonthEventID, arg.Year, arg.Month)
+func (q *Queries) FindMonthEventIDs(ctx context.Context, arg FindMonthEventIDsParams) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, findMonthEventIDs, arg.Year, arg.Month)
 	if err != nil {
 		return nil, err
 	}

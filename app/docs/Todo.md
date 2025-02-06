@@ -11,7 +11,7 @@
 
 ## todo
 
-- resolver,usecaseでsave,updateのときにuserやgroup,eventを返すようにする
+- repositoryでトランザクション処理をする。(二つ以上のクエリがあるところ)
 - middlewareのコメントの部分を実装
 - configがコピペしただけのやつだからコードに合うように変更
 - unit testをする

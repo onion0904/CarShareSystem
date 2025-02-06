@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	userDomain "github.com/onion0904/app/domain/user"
+	"time"
 )
 
 type FindUserUseCase struct {
@@ -24,7 +25,10 @@ type FindUserUseCaseDto struct {
 	Email       string
 	Password    string
 	Icon        string
-	groupID      []string
+	GroupIDs    []string
+	EventIDs    []string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 func (uc *FindUserUseCase) Run(ctx context.Context, id string) (*FindUserUseCaseDto, error) {
@@ -39,6 +43,9 @@ func (uc *FindUserUseCase) Run(ctx context.Context, id string) (*FindUserUseCase
 		Email:       user.Email(),
 		Password:    user.Password(),
 		Icon:        user.Icon(),
-		groupID:     user.GroupID(),
+		GroupIDs:    user.GroupIDs(),
+		EventIDs:    user.EventIDs(),
+		CreatedAt:   user.CreatedAt(),
+        UpdatedAt:   user.UpdatedAt(),
 	}, nil
 }

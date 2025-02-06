@@ -23,16 +23,17 @@ type UpdateUseCaseDto struct {
 	Icon string
 }
 
-func (uc *UpdateUseCase) Run(ctx context.Context,groupID string, dto UpdateUseCaseDto) error {
+func (uc *UpdateUseCase) Run(ctx context.Context,groupID string, dto UpdateUseCaseDto) (*groupDomain.Group,error) {
 	// dtoからuserへ変換
 
 	group , err := uc.groupRepo.FindGroup(ctx, groupID)
 	if err != nil {
-        return err
+        return nil,err
     }
-	ngroup, err := groupDomain.Reconstruct(groupID,dto.Name, group.UsersID(), dto.Icon)
+	ngroup, err := groupDomain.Reconstruct(groupID,dto.Name, group.UserIDs(), group.EventIDs(),dto.Icon)
 	if err != nil {
-		return err
+		return nil,err
 	}
-	return uc.groupRepo.Update(ctx, ngroup)
+	err = uc.groupRepo.Update(ctx, ngroup)
+	return uc.groupRepo.FindGroup(ctx,ngroup.ID())
 }

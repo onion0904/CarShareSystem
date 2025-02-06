@@ -2,37 +2,39 @@ package group
 
 import (
 	"context"
-	userDomain "github.com/onion0904/app/domain/user"
+	groupDomain "github.com/onion0904/app/domain/group"
 )
 
-type AddGroupIDToUserUseCase struct {
-	userRepo userDomain.UserRepository
+type AddUserToGroupUseCase struct {
+	groupRepo groupDomain.GroupRepository
 }
 
-func NewAddGroupIDToUserUseCase(
-	userRepo userDomain.UserRepository,
-) *AddGroupIDToUserUseCase {
-	return &AddGroupIDToUserUseCase{
-		userRepo: userRepo,
+func NewAddUserToGroupUseCase(
+	groupRepo groupDomain.GroupRepository,
+) *AddUserToGroupUseCase {
+	return &AddUserToGroupUseCase{
+		groupRepo: groupRepo,
 	}
 }
 
-type AddGroupIDToUserUseCaseDto struct {
+type AddUserToGroupUseCaseDto struct {
 	UserID  string
 	GroupID string
 }
 
 //
-func (uc *AddGroupIDToUserUseCase) Run(ctx context.Context, dto AddGroupIDToUserUseCaseDto) error {
-	user, err := uc.userRepo.FindUser(ctx, dto.UserID)
+func (uc *AddUserToGroupUseCase) Run(ctx context.Context, dto AddUserToGroupUseCaseDto) (*groupDomain.Group,error) {
+	err := uc.groupRepo.AddUserToGroup(ctx, dto.GroupID,dto.UserID )
 	if err != nil {
-        return err
+        return nil,err
     }
-	groupIDs := user.GroupID()
-	groupIDs = append(groupIDs, dto.GroupID)
-	user, err = userDomain.Reconstruct(user.ID(), user.LastName(), user.FirstName(), user.Email(),user.Password(), user.Icon(), groupIDs)
+	group, err := uc.groupRepo.FindGroup(ctx, dto.GroupID)
 	if err != nil {
-		return err
+        return nil,err
+    }
+	group, err = groupDomain.Reconstruct(group.ID(), group.Name(), group.UserIDs(),group.EventIDs() ,group.Icon())
+	if err != nil {
+		return nil,err
 	}
-	return uc.userRepo.Update(ctx, user)
+	return group,nil
 }

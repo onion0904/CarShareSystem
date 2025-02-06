@@ -19,17 +19,19 @@ func NewFindEventUseCase(
 }
 
 type FindEventUseCaseDto struct {
-	id          string
-	usersID     string
-	together    bool
-	description string
-	year        int32
-	month       int32
-	day         int32
-	date        time.Time
-	startDate   time.Time
-	endDate     time.Time
-	important   bool
+	ID          string
+	UserID     string
+	Together    bool
+	Description string
+	Year        int32
+	Month       int32
+	Day         int32
+	Date        time.Time
+	CreatedAt 	time.Time
+	UpdatedAt   time.Time
+	StartDate   time.Time
+	EndDate     time.Time
+	Important   bool
 }
 
 func (uc *FindEventUseCase) Run(ctx context.Context, eventID string) (*FindEventUseCaseDto, error) {
@@ -38,16 +40,18 @@ func (uc *FindEventUseCase) Run(ctx context.Context, eventID string) (*FindEvent
 		return nil, err
 	}
 	return &FindEventUseCaseDto{
-		id:          event.ID(),
-		usersID:     event.UserID(),
-		together:    event.Together(),
-		description: event.Description(),
-		year:        event.Year(),
-		month:       event.Month(),
-		day:         event.Day(),
-		date:        event.Date(),
-		startDate:   event.StartDate(),
-		endDate:     event.EndDate(),
-		important:   event.Important(),
+		ID:          event.ID(),
+		UserID:     event.UserID(),
+		Together:    event.Together(),
+		Description: event.Description(),
+		Year:        event.Year(),
+		Month:       event.Month(),
+		Day:         event.Day(),
+		Date:        event.Date(),
+		CreatedAt:   event.CreatedAt(),
+        UpdatedAt:   event.UpdatedAt(),
+		StartDate:   event.StartDate(),
+		EndDate:     event.EndDate(),
+		Important:   event.Important(),
 	}, nil
 }

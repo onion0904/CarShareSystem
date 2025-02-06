@@ -3,6 +3,7 @@ package group
 import (
 	"context"
 	groupDomain "github.com/onion0904/app/domain/group"
+	"time"
 )
 
 type FindGroupUseCase struct {
@@ -18,10 +19,13 @@ func NewFindGroupUseCase(
 }
 
 type FindGroupUseCaseDto struct {
-	Id string
+	ID string
 	Name string
-	UsersID []string
+	UserIDs []string
+	EventIDs []string
 	Icon string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (uc *FindGroupUseCase) Run(ctx context.Context, groupID string) (*FindGroupUseCaseDto, error) {
@@ -30,9 +34,12 @@ func (uc *FindGroupUseCase) Run(ctx context.Context, groupID string) (*FindGroup
 		return nil, err
 	}
 	return &FindGroupUseCaseDto{
-		Id:          group.ID(),
+		ID:          group.ID(),
 		Name:        group.Name(),
-		UsersID:     group.UsersID(),
+		UserIDs:     group.UserIDs(),
+		EventIDs:    group.EventIDs(),
 		Icon:        group.Icon(),
+		CreatedAt:   group.CreatedAt(),
+        UpdatedAt:   group.UpdatedAt(),
 	}, nil
 }

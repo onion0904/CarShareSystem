@@ -7,7 +7,6 @@ package sqlc
 
 import (
 	"context"
-	"database/sql"
 )
 
 const deleteUser = `-- name: DeleteUser :exec
@@ -173,7 +172,7 @@ type UpsertUserParams struct {
 	LastName  string
 	FirstName string
 	Email     string
-	Icon      sql.NullString
+	Icon      string
 }
 
 func (q *Queries) UpsertUser(ctx context.Context, arg UpsertUserParams) error {

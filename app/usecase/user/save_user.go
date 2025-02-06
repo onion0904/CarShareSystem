@@ -25,11 +25,15 @@ type SaveUseCaseDto struct {
 	Icon string
 }
 
-func (uc *SaveUseCase) Run(ctx context.Context, dto SaveUseCaseDto) error {
+func (uc *SaveUseCase) Run(ctx context.Context, dto SaveUseCaseDto) (*userDomain.User,error) {
 	// dtoからuserへ変換
 	user, err := userDomain.NewUser(dto.LastName, dto.FirstName, dto.Email, dto.Password, dto.Icon)
 	if err != nil {
-		return err
+		return nil,err
 	}
-	return uc.userRepo.Save(ctx, user)
+	err = uc.userRepo.Save(ctx, user)
+	if err != nil {
+		return nil,err
+	}
+	return uc.userRepo.FindUser(ctx,user.ID())
 }

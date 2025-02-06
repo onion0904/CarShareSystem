@@ -38,14 +38,6 @@ FROM
 WHERE
     id = sqlc.arg(groupID);
 
--- name: FindAllUserID :many
-SELECT
-    user_id
-FROM
-    group_users
-WHERE
-    group_id = sqlc.arg(groupID);
-
 -- name: AddUserToGroup :exec
 INSERT INTO
     group_users (group_id, user_id)

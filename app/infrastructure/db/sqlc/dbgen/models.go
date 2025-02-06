@@ -5,7 +5,6 @@
 package sqlc
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -19,16 +18,16 @@ type Event struct {
 	Day         int32
 	Date        time.Time
 	CreatedAt   time.Time
+	UpdatedAt   time.Time
 	StartDate   time.Time
 	EndDate     time.Time
-	UpdatedAt   time.Time
 	Important   bool
 }
 
 type Group struct {
 	ID        string
 	Name      string
-	Icon      sql.NullString
+	Icon      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -49,7 +48,7 @@ type User struct {
 	FirstName string
 	Email     string
 	Password  string
-	Icon      sql.NullString
+	Icon      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
