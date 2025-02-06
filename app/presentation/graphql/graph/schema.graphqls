@@ -9,7 +9,7 @@ type User {
   firstName: String!
   email: String!
   password: String!
-  icon: String
+  icon: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   groupIDs: [String!]!
@@ -20,7 +20,7 @@ type User {
 type Group {
   id: String!
   name: String!
-  icon: String
+  icon: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   userIDs: [String!]!
@@ -38,9 +38,9 @@ type Event {
   day: Int!
   date: DateTime!
   createdAt: DateTime!
+  updatedAt: DateTime!
   startDate: DateTime!
   endDate: DateTime!
-  updatedAt: DateTime!
   important: Boolean!
 }
 
@@ -57,9 +57,7 @@ type Query {
   # イベント関連
   event(id: String!): Event
   events: [Event!]!
-  eventsByUser(userId: String!): [Event!]!
-  eventsByGroup(groupId: String!): [Event!]!
-  eventsByMonth(input: MonthlyEventInput!): [Event!]!
+  eventsByMonth(input: MonthlyEventInput!): [String!]!
 }
 
 # 入力型の定義
@@ -68,7 +66,7 @@ input CreateUserInput {
   firstName: String!
   email: String!
   password: String!
-  icon: String
+  icon: String!
 }
 
 input UpdateUserInput {
@@ -82,7 +80,7 @@ input UpdateUserInput {
 input CreateGroupInput {
   name: String!
   userId: String!
-  icon: String
+  icon: String!
 }
 
 input UpdateGroupInput {
@@ -116,8 +114,8 @@ input UpdateEventInput {
 }
 
 input MonthlyEventInput {
-  year: Int
-  month: Int
+  year: Int!
+  month: Int!
 } 
 
 # ミューテーションの定義(データの作成、更新、削除のエンドポイント)
@@ -137,6 +135,5 @@ type Mutation {
 
   # イベント関連
   createEvent(input: CreateEventInput!): Event!
-  updateEvent(id: String!, input: UpdateEventInput!): Event!
   deleteEvent(id: String!): Boolean!
 }

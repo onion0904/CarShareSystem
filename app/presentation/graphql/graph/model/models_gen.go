@@ -20,17 +20,17 @@ type CreateEventInput struct {
 }
 
 type CreateGroupInput struct {
-	Name   string  `json:"name"`
-	UserID string  `json:"userId"`
-	Icon   *string `json:"icon,omitempty"`
+	Name   string `json:"name"`
+	UserID string `json:"userId"`
+	Icon   string `json:"icon"`
 }
 
 type CreateUserInput struct {
-	LastName  string  `json:"lastName"`
-	FirstName string  `json:"firstName"`
-	Email     string  `json:"email"`
-	Password  string  `json:"password"`
-	Icon      *string `json:"icon,omitempty"`
+	LastName  string `json:"lastName"`
+	FirstName string `json:"firstName"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	Icon      string `json:"icon"`
 }
 
 type Event struct {
@@ -43,16 +43,16 @@ type Event struct {
 	Day         int32     `json:"day"`
 	Date        time.Time `json:"date"`
 	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 	StartDate   time.Time `json:"startDate"`
 	EndDate     time.Time `json:"endDate"`
-	UpdatedAt   time.Time `json:"updatedAt"`
 	Important   bool      `json:"important"`
 }
 
 type Group struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"name"`
-	Icon      *string   `json:"icon,omitempty"`
+	Icon      string    `json:"icon"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	UserIDs   []string  `json:"userIDs"`
@@ -60,8 +60,8 @@ type Group struct {
 }
 
 type MonthlyEventInput struct {
-	Year  *int32 `json:"year,omitempty"`
-	Month *int32 `json:"month,omitempty"`
+	Year  int32 `json:"year"`
+	Month int32 `json:"month"`
 }
 
 type Mutation struct {
@@ -101,7 +101,7 @@ type User struct {
 	FirstName string    `json:"firstName"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
-	Icon      *string   `json:"icon,omitempty"`
+	Icon      string    `json:"icon"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	GroupIDs  []string  `json:"groupIDs"`
