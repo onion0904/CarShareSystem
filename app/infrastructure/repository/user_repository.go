@@ -53,7 +53,7 @@ func (ur *userRepository) FindUser(ctx context.Context, UserID string) (*user.Us
     }
     defer tx.Rollback() // エラー時のロールバック保証
 
-    query := db.GetQuery(ctx).WithTx(tx) // トランザクション適用
+    query := db.GetQuery(ctx).WithTx(tx) // query変数にトランザクション適用
 
     // ユーザー情報の取得
     u, err := query.FindUser(ctx, UserID)

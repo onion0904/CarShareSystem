@@ -57,9 +57,15 @@ func (gr *groupRepository)Delete(ctx context.Context , groupID string) error {
 }
 	
 func (gr *groupRepository)FindGroup(ctx context.Context,groupID string) (*group.Group, error) {
-	query := db.GetQuery(ctx)
+	DB := db.GetDB()
+	tx, err := DB.BeginTx(ctx,nil)
+	if err!= nil {
+        return nil, err
+    }
+	defer tx.Rollback()
 	
-
+	query := db.GetQuery(ctx).WithTx(tx)
+	
 	g, err := query.FindGroup(ctx, groupID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -90,6 +96,11 @@ func (gr *groupRepository)FindGroup(ctx context.Context,groupID string) (*group.
 	}
 	ng.SetCreatedAt(g.CreatedAt)
 	ng.SetUpdatedAt(g.UpdatedAt)
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return ng, nil
 }
 
