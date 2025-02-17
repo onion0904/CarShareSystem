@@ -26,7 +26,7 @@ UPDATE
     icon = sqlc.arg(icon),
     updated_at = NOW();
 
--- name: FindUser :one
+-- name: FindUserByID :one
 SELECT
     id,
     last_name,
@@ -40,6 +40,21 @@ FROM
     users
 WHERE
     id = ?;
+
+-- name: FindUserByEmailPassword :one
+SELECT
+    id,
+    last_name,
+    first_name,
+    email,
+    password,
+    icon,
+    created_at,
+    updated_at
+FROM
+    users
+WHERE
+    email = ? AND password = ?;
 
 -- name: DeleteUser :exec
 DELETE FROM

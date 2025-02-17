@@ -43,7 +43,7 @@ func SetDB(d *sql.DB) {
 	dbcon = d
 }
 
-func NewMainDB(cnf config.DBConfig) {
+func NewMainDB(cnf config.DBConfig) *sql.DB {
 	once.Do(func() {
 		dbcon, err := connect(
 			cnf.User,
@@ -59,6 +59,8 @@ func NewMainDB(cnf config.DBConfig) {
 		SetQuery(q)
 		SetDB(dbcon)
 	})
+
+	return dbcon
 }
 
 // dbに接続する：最大5回リトライする

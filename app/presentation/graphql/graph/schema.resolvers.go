@@ -7,13 +7,20 @@ package graph
 import (
 	"context"
 	"fmt"
+	"log"
 
+	"github.com/onion0904/app/config"
+	errDomain "github.com/onion0904/app/domain/error"
 	domain_event "github.com/onion0904/app/domain/event"
+	mail_Service "github.com/onion0904/app/infrastructure/mail"
 	repo "github.com/onion0904/app/infrastructure/repository"
 	"github.com/onion0904/app/presentation/graphql/graph/model"
 	usecase_event "github.com/onion0904/app/usecase/event"
 	usecase_group "github.com/onion0904/app/usecase/group"
+	usecase_mail "github.com/onion0904/app/usecase/mail"
 	usecase_user "github.com/onion0904/app/usecase/user"
+	"github.com/onion0904/go-pkg/jwt"
+	VerifiedCode "github.com/onion0904/go-pkg/verified_code"
 )
 
 // CreateUser is the resolver for the createUser field.
@@ -262,6 +269,144 @@ func (r *mutationResolver) DeleteEvent(ctx context.Context, id string) (bool, er
 		return false, err
 	}
 	return true, nil
+}
+
+// SendVerificationCode is the resolver for the sendVerificationCode field.
+func (r *mutationResolver) SendVerificationCode(ctx context.Context, email string) (bool, error) {
+	mailService := mail_Service.NewMailRepository()
+	send := usecase_mail.NewSendEmailUseCase(mailService)
+	if email == "" {
+		return false, errDomain.NewError("メールアドレスが必要です")
+	}
+
+	// 認証コードの生成
+	vcode, err := VerifiedCode.GenerateVerificationCode()
+	if err != nil {
+		log.Printf("Error generating verification code: %v", err)
+		return false, errDomain.NewError("認証コードの生成に失敗しました")
+	}
+
+	// 認証コードを保存
+	send.CodeMutex.Lock()
+	send.VerificationCodes[email] = vcode
+	send.CodeMutex.Unlock()
+
+	// メール送信
+	DTO := usecase_mail.SendEmailUseCaseDto{
+		Email: email,
+		Code:  vcode,
+	}
+	send.Run(ctx, DTO)
+	return true, nil
+}
+
+// Signup is the resolver for the signup field.
+func (r *mutationResolver) Signup(ctx context.Context, input model.CreateUserInput, vcode string) (*model.AuthUserResponse, error) {
+	mailService := mail_Service.NewMailRepository()
+	send := usecase_mail.NewSendEmailUseCase(mailService)
+	c := config.GetConfig()
+	secret := c.JWT.Secret
+	if secret == "" {
+		log.Printf("JWT secret key is not set")
+		return nil, errDomain.NewError("JWT secret key is not set")
+	}
+	jwtSecret := []byte(secret)
+
+	if input.Email == "" || input.Password == "" || vcode == "" {
+		return nil, errDomain.NewError("Email or Password or verified code is not set")
+	}
+	userRepo := repo.NewUserRepository()
+	exist, err := userRepo.ExistUser(ctx, input.Email, input.Password)
+	if err != nil {
+		return nil, err
+	}
+	if exist {
+		return nil, errDomain.NewError("User is already registered")
+	}
+
+	send.CodeMutex.Lock()
+	expectedCode, exists := send.VerificationCodes[input.Email]
+	send.CodeMutex.Unlock()
+
+	if !exists {
+		return nil, errDomain.NewError("verified code is not found")
+	}
+
+	if expectedCode != vcode {
+		return nil, errDomain.NewError("Invalid verified code")
+	}
+
+	send.CodeMutex.Lock()
+	delete(send.VerificationCodes, input.Email)
+	send.CodeMutex.Unlock()
+
+	user, err := r.CreateUser(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	customClaim := jwt.NewCustomClaims(user.Email, user.ID)
+	token := jwt.CreateToken(customClaim)
+	tokenString, err := token.SignedString(jwtSecret)
+	if err != nil {
+		return nil, err
+	}
+	return &model.AuthUserResponse{
+		Token: tokenString,
+		User:  user,
+	}, nil
+}
+
+// Signin is the resolver for the signin field.
+func (r *mutationResolver) Signin(ctx context.Context, email string, password string) (*model.AuthUserResponse, error) {
+	c := config.GetConfig()
+	secret := c.JWT.Secret
+	if secret == "" {
+		log.Printf("JWT secret key is not set")
+		return nil, errDomain.NewError("JWT secret key is not set")
+	}
+	jwtSecret := []byte(secret)
+
+	if email == "" || password == "" {
+		return nil, errDomain.NewError("Email or Password or verified code is not set")
+	}
+	userRepo := repo.NewUserRepository()
+	exist, err := userRepo.ExistUser(ctx, email, password)
+	if err != nil {
+		return nil, err
+	}
+	if exist {
+		return nil, errDomain.NewError("User is already registered")
+	}
+
+	find := usecase_user.NewFindUserByEmailPasswordUseCase(userRepo)
+	user, err := find.Run(ctx, email, password)
+	if err != nil {
+		return nil, err
+	}
+	nuser := model.User{
+		ID:        user.ID,
+		LastName:  user.LastName,
+		FirstName: user.FirstName,
+		Email:     user.Email,
+		Password:  user.Password,
+		Icon:      user.Icon,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		GroupIDs:  user.GroupIDs,
+		EventIDs:  user.EventIDs,
+	}
+
+	customClaim := jwt.NewCustomClaims(email, user.ID)
+	token := jwt.CreateToken(customClaim)
+	tokenString, err := token.SignedString(jwtSecret)
+	if err != nil {
+		return nil, err
+	}
+	return &model.AuthUserResponse{
+		Token: tokenString,
+		User:  &nuser,
+	}, nil
 }
 
 // User is the resolver for the user field.

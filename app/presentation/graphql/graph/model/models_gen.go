@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+type AuthUserResponse struct {
+	Token string `json:"token"`
+	User  *User  `json:"User"`
+}
+
 type CreateEventInput struct {
 	UserID      string    `json:"userId"`
 	Together    bool      `json:"together"`

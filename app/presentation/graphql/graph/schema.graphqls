@@ -47,15 +47,15 @@ type Event {
 # クエリの定義(データの取得のエンドポイント)
 type Query {
   # ユーザー関連
-  user(id: String!): User
+  user(id: String!): User!
   users: [User!]!
 
   # グループ関連
-  group(id: String!): Group
+  group(id: String!): Group!
   groups: [Group!]!
 
   # イベント関連
-  event(id: String!): Event
+  event(id: String!): Event!
   events: [Event!]!
   eventsByMonth(input: MonthlyEventInput!): [String!]!
 }
@@ -116,7 +116,12 @@ input UpdateEventInput {
 input MonthlyEventInput {
   year: Int!
   month: Int!
-} 
+}
+
+type AuthUserResponse {
+  token: String!
+  User:  User!
+}
 
 # ミューテーションの定義(データの作成、更新、削除のエンドポイント)
 type Mutation {
@@ -136,4 +141,9 @@ type Mutation {
   # イベント関連
   createEvent(input: CreateEventInput!): Event!
   deleteEvent(id: String!): Boolean!
+
+  # メール、認証関連
+  sendVerificationCode(email: String!): Boolean!
+  signup(input: CreateUserInput!, vcode: String!): AuthUserResponse!
+  signin(email: String!, password: String!): AuthUserResponse!
 }
