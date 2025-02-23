@@ -12,3 +12,4 @@
 ## todo
 
 - unit testをする(もっと早くやるべきだった)
+- cloud周りを実装(CI/CD)
