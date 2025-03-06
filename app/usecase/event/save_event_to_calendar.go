@@ -23,13 +23,16 @@ type AddEventUseCaseDTO struct {
 	UsersID string
 	Together bool
 	Description string
+	Year        int32
+	Month       int32
+	Day         int32
 	Important bool
 }
 
 
 // イベントを追加する
 func (uc *SaveEventUsecase) Run(ctx context.Context, dto AddEventUseCaseDTO) (*eventDomain.Event,error) {	
-	event, err := eventDomain.NewEvent(dto.UsersID, dto.Together, dto.Description, dto.Important)
+	event, err := eventDomain.NewEvent(dto.UsersID, dto.Together, dto.Description, dto.Year, dto.Month, dto.Day, dto.Important)
 	if err != nil {
 		return nil,err
 	}

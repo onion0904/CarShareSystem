@@ -106,9 +106,12 @@ func TestReconstruct(t *testing.T) {
 
 func TestNewEvent(t *testing.T) {
 	type args struct {
-		userID     string
+		userID      string
 		together    bool
 		description string
+		year        int32
+		month       int32
+		day         int32
 		important   bool
 	}
 	tests := []struct {
@@ -123,6 +126,9 @@ func TestNewEvent(t *testing.T) {
                 userID:      "user123",
                 together:    true,
                 description: "Test Event",
+				year:        2004,
+                month:       9,
+                day:         4,
 				important:   true,
 			},
 			want: &Event{
@@ -130,6 +136,9 @@ func TestNewEvent(t *testing.T) {
                 userID:      "user123",
                 together:    true,
                 description: "Test Event",
+				year:        2004,
+                month:       9,
+                day:         4,
                 important:   true,
 			},
 			wantErr: false,
@@ -140,6 +149,9 @@ func TestNewEvent(t *testing.T) {
 				userID:      "user123",
                 together:    true,
                 description: "",
+				year:        2004,
+                month:       9,
+                day:         4,
                 important:   true,
 			},
 			wantErr: true,
@@ -150,63 +162,24 @@ func TestNewEvent(t *testing.T) {
 				userID:      "user123",
                 together:    true,
                 description: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                important:   true,
-			},
-			wantErr: true,
-		},
-		{
-			name: "error case: year",
-			args: args{
-				userID:      "user123",
-                together:    true,
-                description: "Test year",
-                important:   true,
-			},
-			wantErr: true,
-		},
-		{
-			name: "error case: month",
-			args: args{
-				userID:      "user123",
-                together:    true,
-                description: "Test month",
-                important:   true,
-			},
-			wantErr: true,
-		},
-		{
-			name: "error case: day",
-			args: args{
-				userID:      "user123",
-                together:    true,
-                description: "Test day",
-                important:   true,
+				year:        2004,
+                month:       9,
+                day:         4,
+				important:   true,
 			},
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewEvent(tt.args.userID, tt.args.together, tt.args.description, tt.args.important)
+			got, err := NewEvent(tt.args.userID, tt.args.together, tt.args.description, tt.args.year, tt.args.month, tt.args.day, tt.args.important)
 			if got != nil {
 				got.id = "01F8B9Z6G9WBJK9XJH5M7RQK5X" //ulidがランダムで生成されるため
 				// 現在の時刻になるため
 				if tt.name == "ok case: New"{
-					tt.want.year = got.year
-                    tt.want.month = got.month
-                    tt.want.day = got.day
 					tt.want.date = got.date
 					tt.want.startDate = got.startDate
 					tt.want.endDate = got.endDate
-				}
-				if tt.name == "error case: year"{
-					got.year = 2424142
-				}
-				if tt.name == "error case: month"{
-					got.month = 412412414
-				}
-				if tt.name == "error case: day"{
-					got.day = 41251324
 				}
 			}
 			if (err != nil) != tt.wantErr {
@@ -280,6 +253,91 @@ func Test_newEvent(t *testing.T) {
                 year:        2000,
                 month:       12,
                 day:         12,
+                date:        time.Time{},
+                startDate:   time.Time{},
+                endDate:     time.Time{},
+                important:   true,
+			},
+			wantErr: true,
+		},
+		{
+			name: "error case: year",
+			args: args{
+				id:          "01F8B9Z6G9WBJK9XJH5M7RQK5X",
+				userID:      "user123",
+                together:    true,
+                description: "Test year",
+				year:        0,
+                month:       12,
+                day:         12,
+                date:        time.Time{},
+                startDate:   time.Time{},
+                endDate:     time.Time{},
+                important:   true,
+			},
+			wantErr: true,
+		},
+		{
+			name: "error case: month",
+			args: args{
+				id:          "01F8B9Z6G9WBJK9XJH5M7RQK5X",
+				userID:      "user123",
+                together:    true,
+                description: "Test year",
+				year:        2000,
+                month:       0,
+                day:         12,
+                date:        time.Time{},
+                startDate:   time.Time{},
+                endDate:     time.Time{},
+                important:   true,
+			},
+			wantErr: true,
+		},
+		{
+			name: "error case: day",
+			args: args{
+				id:          "01F8B9Z6G9WBJK9XJH5M7RQK5X",
+				userID:      "user123",
+                together:    true,
+                description: "Test year",
+				year:        2000,
+                month:       12,
+                day:         0,
+                date:        time.Time{},
+                startDate:   time.Time{},
+                endDate:     time.Time{},
+                important:   true,
+			},
+			wantErr: true,
+		},
+		{
+			name: "error case: day of month february28",
+			args: args{
+				id:          "01F8B9Z6G9WBJK9XJH5M7RQK5X",
+				userID:      "user123",
+                together:    true,
+                description: "Test year",
+				year:        2025,
+                month:       2,
+                day:         31,
+                date:        time.Time{},
+                startDate:   time.Time{},
+                endDate:     time.Time{},
+                important:   true,
+			},
+			wantErr: true,
+		},
+		{
+			name: "error case: day of month february29",
+			args: args{
+				id:          "01F8B9Z6G9WBJK9XJH5M7RQK5X",
+				userID:      "user123",
+                together:    true,
+                description: "Test year",
+				year:        2024,
+                month:       2,
+                day:         31,
                 date:        time.Time{},
                 startDate:   time.Time{},
                 endDate:     time.Time{},

@@ -56,6 +56,9 @@ func NewEvent(
 	userID string,
 	together bool,
 	description string,
+	year int32,
+    month int32,
+    day int32,
 	important bool,
 ) (*Event, error) {
 	return newEvent(
@@ -63,9 +66,9 @@ func NewEvent(
 		userID,
 		together,
 		description,
-		pkgTime.Year(),
-		pkgTime.Month(),
-		pkgTime.Day(),
+		year,
+        month,
+        day,
 		pkgTime.Now(),
 		pkgTime.NextStartWeek(),
 		pkgTime.NextEndWeek(),
