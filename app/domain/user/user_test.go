@@ -26,6 +26,7 @@ func TestReconstruct(t *testing.T) {
 		{
 			name: "ok case: Reconstruct & Getter",
 			args: args{
+				id:        "01F8B9Z6G9WBJK9XJH5M7RQK5X",  // 有効なULIDの例
 				lastName:  "John",
 				firstName: "Doe",
 				email:     "john@example.com",
@@ -33,7 +34,7 @@ func TestReconstruct(t *testing.T) {
 				icon:      "icon.jpg",
 			},
 			want: &User{
-				id:        "",
+				id:        "01F8B9Z6G9WBJK9XJH5M7RQK5X",
 				lastName:  "John",
 				firstName: "Doe",
 				email:     "john@example.com",
@@ -108,7 +109,7 @@ func TestNewUser(t *testing.T) {
 				icon:      "icon.jpg",
 			},
 			want: &User{
-				id:        "",
+				id:        "01F8B9Z6G9WBJK9XJH5M7RQK5X",
 				lastName:  "John",
 				firstName: "Doe",
 				email:     "john@example.com",
@@ -120,7 +121,7 @@ func TestNewUser(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "error case: lastname",
+			name: "error case: small lastname",
 			args: args{
 				lastName:  "",
 				firstName: "hogehoge",
@@ -131,7 +132,29 @@ func TestNewUser(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error case: firstname",
+			name: "error case: big lastName",
+			args: args{
+				lastName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+				firstName:  "hogehoge",
+				email:     "hogehoge",
+				password:  "password",
+				icon:      "icon.jpg",
+			},
+			wantErr: true,
+		},
+		{
+			name: "error case: small firstname",
+			args: args{
+				lastName: "hogehoge",
+				firstName:  "",
+				email:     "hogehoge",
+				password:  "password",
+				icon:      "icon.jpg",
+			},
+			wantErr: true,
+		},
+		{
+			name: "error case: big firstname",
 			args: args{
 				lastName:  "hogehoge",
 				firstName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -157,7 +180,7 @@ func TestNewUser(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := NewUser(tt.args.lastName, tt.args.firstName, tt.args.email, tt.args.password, tt.args.icon)
 			if got != nil {
-				got.id = "" //ulidがランダムで生成されるため
+				got.id = "01F8B9Z6G9WBJK9XJH5M7RQK5X" //ulidがランダムで生成されるため
 			}
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewUser() error = %v, wantErr %v", err, tt.wantErr)
@@ -192,6 +215,7 @@ func Test_newUser(t *testing.T) {
 		{
 			name: "ok case: new",
 			args: args{
+				id:        "01F8B9Z6G9WBJK9XJH5M7RQK5X",   // 有効なULIDの例
 				lastName:  "John",
 				firstName: "Doe",
 				email:     "john@example.com",
@@ -199,7 +223,7 @@ func Test_newUser(t *testing.T) {
 				icon:      "icon.jpg",
 			},
 			want: &User{
-				id:        "",
+				id:        "01F8B9Z6G9WBJK9XJH5M7RQK5X",
 				lastName:  "John",
 				firstName: "Doe",
 				email:     "john@example.com",
@@ -210,11 +234,22 @@ func Test_newUser(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "error case: id",
+			args: args{
+				id:        "id",
+				lastName:  "hoge",
+				firstName: "hogehoge",
+				email:     "hogehoge",
+				password:  "password",
+				icon:      "icon.jpg",
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := newUser(tt.args.id, tt.args.lastName, tt.args.firstName, tt.args.email, tt.args.password, tt.args.icon, tt.args.groupIDs, tt.args.eventIDs)
-			got.id = "" //ulidがランダムで生成されるため
 			if (err != nil) != tt.wantErr {
 				t.Errorf("newUser() error = %v, wantErr %v", err, tt.wantErr)
 				return

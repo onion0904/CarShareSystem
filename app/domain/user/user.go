@@ -73,6 +73,10 @@ func newUser(
 	groupIDs []string,
 	eventIDs []string,
 ) (*User, error) {
+	// ownerIDのバリデーション
+	if !ulid.IsValid(id) {
+		return nil, errDomain.NewError("オーナーIDの値が不正です。")
+	}
 	// 名前のバリデーション
 	if utf8.RuneCountInString(lastName) < nameLengthMin || utf8.RuneCountInString(lastName) > nameLengthMax {
 		return nil, errDomain.NewError("名前（姓）の値が不正です。")

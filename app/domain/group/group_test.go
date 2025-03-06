@@ -13,8 +13,6 @@ func TestReconstruct(t *testing.T) {
 		userIDs  []string
 		eventIDs []string
 		icon     string
-		createdAt string
-		updatedAt string
 	}
 	tests := []struct {
 		name    string
@@ -25,17 +23,18 @@ func TestReconstruct(t *testing.T) {
 		{
 			name: "ok case: Reconstruct & Getter",
 			args: args{
-				id: "",
+				id:       "01F8B9Z6G9WBJK9XJH5M7RQK5X",  // 有効なULIDの例
 				name:     "Test Group",
                 icon:     "group.jpg",
 			},
 			want: &Group{
-				id:       "",
+				id:       "01F8B9Z6G9WBJK9XJH5M7RQK5X",
                 name:     "Test Group",
                 userIDs:  nil,
                 eventIDs: nil,
                 icon:     "group.jpg",
 			},
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
@@ -87,17 +86,37 @@ func TestNewGroup(t *testing.T) {
                 icon:     "group.jpg",
 			},
 			want: &Group{
-				id:       "",
+				id:       "01F8B9Z6G9WBJK9XJH5M7RQK5X",
                 name:     "Test Group",
                 userIDs:  nil,
                 eventIDs: nil,
                 icon:     "group.jpg",
 			},
+			wantErr: false,
+		},
+		{
+			name: "error case: small group name",
+			args: args{
+				name:     "",
+                icon:     "group.jpg",
+			},
+			wantErr: true,
+		},
+		{
+			name: "error case: big group name",
+			args: args{
+				name:     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                icon:     "group.jpg",
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := NewGroup(tt.args.name, tt.args.userIDs, tt.args.icon)
+			if got != nil {
+				got.id = "01F8B9Z6G9WBJK9XJH5M7RQK5X" //ulidがランダムで生成されるため
+			}
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewGroup() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -126,17 +145,27 @@ func Test_newGroup(t *testing.T) {
 		{
 			name: "ok case: new",
 			args: args{
-				id: "",
+				id:       "01F8B9Z6G9WBJK9XJH5M7RQK5X",   // 有効なULIDの例
 				name:     "Test Group",
                 icon:     "group.jpg",
 			},
 			want: &Group{
-				id:       "",
+				id:       "01F8B9Z6G9WBJK9XJH5M7RQK5X",
                 name:     "Test Group",
                 userIDs:  nil,
                 eventIDs: nil,
                 icon:     "group.jpg",
 			},
+			wantErr: false,
+		},
+		{
+			name: "error case: id",
+			args: args{
+				id:       "id",
+				name:     "Test Group",
+                icon:     "group.jpg",
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {

@@ -1,34 +1,32 @@
 package event
 
-import(
-	"unicode/utf8"
-	"github.com/onion0904/go-pkg/ulid"
-	"github.com/onion0904/go-pkg/ints"
-	pkgTime "github.com/onion0904/go-pkg/time"
+import (
 	errDomain "github.com/onion0904/app/domain/error"
+	pkgTime "github.com/onion0904/go-pkg/time"
+	"github.com/onion0904/go-pkg/ulid"
 	"time"
+	"unicode/utf8"
 )
 
-
 type Event struct {
-	id string
-	usersID string
-	together bool
+	id          string
+	userID      string
+	together    bool
 	description string
-	year int32
-	month int32
-	day int32
-	date time.Time
-	createdAt time.Time
-	updatedAt time.Time
-	startDate time.Time
-	endDate time.Time
-	important bool
+	year        int32
+	month       int32
+	day         int32
+	date        time.Time
+	createdAt   time.Time
+	updatedAt   time.Time
+	startDate   time.Time
+	endDate     time.Time
+	important   bool
 }
 
 func Reconstruct(
 	id string,
-	usersID string,
+	userID string,
 	together bool,
 	description string,
 	year int32,
@@ -41,11 +39,11 @@ func Reconstruct(
 ) (*Event, error) {
 	return newEvent(
 		id,
-		usersID,
+		userID,
 		together,
 		description,
 		year,
-        month,
+		month,
 		day,
 		date,
 		startDate,
@@ -55,18 +53,18 @@ func Reconstruct(
 }
 
 func NewEvent(
-	usersID string,
+	userID string,
 	together bool,
 	description string,
 	important bool,
 ) (*Event, error) {
 	return newEvent(
 		ulid.NewUlid(),
-		usersID,
+		userID,
 		together,
 		description,
 		pkgTime.Year(),
-        pkgTime.Month(),
+		pkgTime.Month(),
 		pkgTime.Day(),
 		pkgTime.Now(),
 		pkgTime.NextStartWeek(),
@@ -77,43 +75,60 @@ func NewEvent(
 
 func newEvent(
 	id string,
-	usersID string,
+	userID string,
 	together bool,
 	description string,
 	year int32,
-    month int32,
+	month int32,
 	day int32,
 	date time.Time,
 	startDate time.Time,
-    endDate time.Time,
+	endDate time.Time,
 	important bool,
 ) (*Event, error) {
-	// ownerIDのバリデーション
+	// IDのバリデーション
 	if !ulid.IsValid(id) {
-		return nil, errDomain.NewError("オーナーIDの値が不正です。")
+		return nil, errDomain.NewError("IDの値が不正です。")
 	}
-	// 名前のバリデーション
-	if utf8.RuneCountInString(description) < nameLengthMin || utf8.RuneCountInString(description) > nameLengthMax {
-		return nil, errDomain.NewError("グループ名が不正です。")
-	}
-
-	if ints.Digit(year) != yearLength || ints.Digit(month) != monthLength || ints.Digit(day) != dayLength{
-		return nil, errDomain.NewError("グループ名が不正です。")
+	// descriptionのバリデーション
+	if utf8.RuneCountInString(description) < descriptionLengthMin || utf8.RuneCountInString(description) > descriptionLengthMax {
+		return nil, errDomain.NewError("descriptionが不正です。")
 	}
 
+	// 値の範囲チェック
+	if year < 1000 || year > 9999 || month < 1 || month > 12 || day < 1 || day > 31 {
+		return nil, errDomain.NewError("year,month,dayの値が範囲外です")
+	}
+
+	// 月ごとの日数チェック（より厳密にする場合）
+	var daysInMonth int32 = 31
+	if month == 4 || month == 6 || month == 9 || month == 11 {
+		daysInMonth = 30
+	} else if month == 2 {
+		// 閏年チェック
+		if (year%4 == 0 && year%100 != 0) || year%400 == 0 {
+			daysInMonth = 29
+		} else {
+			daysInMonth = 28
+		}
+	}
+
+	if day > daysInMonth {
+		return nil, errDomain.NewError("指定された月の日数が不正です")
+	}
 
 	return &Event{
 		id:          id,
-		usersID:        usersID,
-		together:        together,
-		description:   description,
-		year:         year,
-        month:        month,
+		userID:      userID,
+		together:    together,
+		description: description,
+		year:        year,
+		month:       month,
 		day:         day,
-		date:         date,
-		startDate:  startDate,
-        endDate:    endDate,
-		important: important,
+		date:        date,
+		startDate:   startDate,
+		endDate:     endDate,
+		important:   important,
 	}, nil
 }
 
@@ -122,7 +137,7 @@ func (c *Event) ID() string {
 }
 
 func (c *Event) UserID() string {
-	return c.usersID
+	return c.userID
 }
 
 func (c *Event) Together() bool {
@@ -134,53 +149,50 @@ func (c *Event) Description() string {
 }
 
 func (c *Event) Year() int32 {
-    return c.year
+	return c.year
 }
 
 func (c *Event) Month() int32 {
-    return c.month
+	return c.month
 }
 
 func (c *Event) Day() int32 {
-    return c.day
+	return c.day
 }
 
 func (c *Event) Date() time.Time {
-    return c.date
+	return c.date
 }
 
 func (c *Event) CreatedAt() time.Time {
-    return c.createdAt
+	return c.createdAt
 }
 
 func (c *Event) UpdatedAt() time.Time {
-    return c.updatedAt
+	return c.updatedAt
 }
 
-func (u *Event) SetCreatedAt(t time.Time){
+func (u *Event) SetCreatedAt(t time.Time) {
 	u.createdAt = t
 }
 
-func (u *Event) SetUpdatedAt(t time.Time){
-    u.updatedAt = t
+func (u *Event) SetUpdatedAt(t time.Time) {
+	u.updatedAt = t
 }
 
 func (c *Event) StartDate() time.Time {
-    return c.startDate
+	return c.startDate
 }
 
 func (c *Event) EndDate() time.Time {
-    return c.endDate
+	return c.endDate
 }
 
 func (c *Event) Important() bool {
-    return c.important
+	return c.important
 }
 
 const (
-	nameLengthMin = 1
-	nameLengthMax = 200
-	yearLength = 4
-	monthLength = 2
-	dayLength = 2
+	descriptionLengthMin = 1
+	descriptionLengthMax = 200
 )
