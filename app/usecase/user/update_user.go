@@ -35,5 +35,12 @@ func (uc *UpdateUseCase) Run(ctx context.Context, id string, dto UpdateUseCaseDt
 		return nil,err
 	}
 	err = uc.userRepo.Update(ctx, nuser)
-	return uc.userRepo.FindUser(ctx,user.ID())
+	if err != nil {
+		return nil, err
+	}
+	updatedUser, err := uc.userRepo.FindUser(ctx, user.ID())
+	if err != nil {
+		return nil, err
+	}
+	return updatedUser,nil
 }

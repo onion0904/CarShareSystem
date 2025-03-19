@@ -5,20 +5,6 @@ import "time"
 func Now() time.Time {
 	return time.Now()
 }
-func Year() int32 {
-	year := time.Now().Year()
-	return int32(year)
-}
-
-func Month() int32 {
-	month := time.Now().Month()
-	return int32(month)
-}
-
-func Day() int32 {
-	day := time.Now().Day()
-	return int32(day)
-}
 
 //次の週の日曜日の日を出力
 func NextEndWeek() time.Time {

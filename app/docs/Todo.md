@@ -10,6 +10,6 @@
 - docs
 
 ## todo
-
-- unit testをする(もっと早くやるべきだった)
+- unit testをする
+-- usecase, infra, presen
 - cloud周りを実装(CI/CD)

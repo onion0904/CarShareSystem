@@ -1,24 +1,28 @@
 # CarShareSystem
 
+# 説明
+このアプリは知り合い同士で車をシェアするアプリです。
+
 ## 目的
 - CleanArchitectureを学ぶ
-- GraphQLと~SQLboiler~sqlcを使ってみる
+- Testを学ぶ
+- GraphQLと~SQLboiler~sqlcを学ぶ
 - 友達と車をシェアしたい
 
-## ユーザー登録
+## ドメイン
 - サインイン(auth)
     -メールアドレス
     - パスワード
     - パスワードの確認
 - プロフィール設定(user)
     - 名前
-    - アイコン(何個かから選ぶ動物的なのから選ぶ)
-- メンバーを招待(member)
+    - アイコン(選ぶ形式にする)
+- メンバーを招待(group)
     - Lineで招待
     - QRコードで招待
     - 招待リンクをコピーする
-- 日程決め(calendar)
-    - カレンダー形式
+- 日程決め(event)
+    - カレンダー形式のイメージ
     - 予約作成でメモを追加できる
     - 通学で使うかどうかを追加できる
     - 一週間前(月曜日)から次の週(月曜日から日曜日)の登録可能
@@ -35,20 +39,18 @@
 ## 使用技術
 - API形式
     - GraphQL
-- CI/CDパイプライン
-    - Github Actions
-    - Docker
-- デプロイ先
-    - Cloudflare
 - orm
     - ~SQLBoiler~ (Maintenance Mode)
     - sqlc
 - framework
     - echo
 - ログイン認証
-    - JWT
+    - JWT->OAuthにしていきたい
 - SQL
     - MySQL
+- その他
+    - docker
+    - gomock
 
 ## ディレクトリの説明
 
