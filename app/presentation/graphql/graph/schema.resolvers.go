@@ -41,16 +41,16 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 		return nil, err
 	}
 	nuser := model.User{
-		ID:        user.ID(),
-		LastName:  user.LastName(),
-		FirstName: user.FirstName(),
-		Email:     user.Email(),
-		Password:  user.Password(),
-		Icon:      user.Icon(),
-		CreatedAt: user.CreatedAt(),
-		UpdatedAt: user.UpdatedAt(),
-		GroupIDs:  user.GroupIDs(),
-		EventIDs:  user.EventIDs(),
+		ID:        user.ID,
+		LastName:  user.LastName,
+		FirstName: user.FirstName,
+		Email:     user.Email,
+		Password:  user.Password,
+		Icon:      user.Icon,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		GroupIDs:  user.GroupIDs,
+		EventIDs:  user.EventIDs,
 	}
 	return &nuser, nil
 }
@@ -70,16 +70,16 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input mode
 		return nil, err
 	}
 	nuser := model.User{
-		ID:        user.ID(),
-		LastName:  user.LastName(),
-		FirstName: user.FirstName(),
-		Email:     user.Email(),
-		Password:  user.Password(),
-		Icon:      user.Icon(),
-		CreatedAt: user.CreatedAt(),
-		UpdatedAt: user.UpdatedAt(),
-		GroupIDs:  user.GroupIDs(),
-		EventIDs:  user.EventIDs(),
+		ID:        user.ID,
+		LastName:  user.LastName,
+		FirstName: user.FirstName,
+		Email:     user.Email,
+		Password:  user.Password,
+		Icon:      user.Icon,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		GroupIDs:  user.GroupIDs,
+		EventIDs:  user.EventIDs,
 	}
 	return &nuser, nil
 }

@@ -17,16 +17,11 @@ func NewCheckExistUserUseCase(
 	}
 }
 
-type CheckExistUserUseCaseDto struct {
-	Exist bool
-}
-
-func (uc *CheckExistUserUseCase) Run(ctx context.Context, email string, password string) (*CheckExistUserUseCaseDto,error) {
+func (uc *CheckExistUserUseCase) Run(ctx context.Context, email string, password string) (bool,error) {
 	exist,err := uc.userRepo.ExistUser(ctx,email, password)
 	if err != nil {
-        return nil, err
+		// boolのゼロ値がfalseのため
+        return false, err
     }
-	return &CheckExistUserUseCaseDto{
-		Exist: exist,
-	},nil
+	return exist,nil
 }

@@ -10,6 +10,7 @@
 - docs
 
 ## todo
-- unit testをする
--- usecase, infra, presen
-- cloud周りを実装(CI/CD)
+- unit test
+    -usecase, infra, presen
+- E2E test
+- CI/CD

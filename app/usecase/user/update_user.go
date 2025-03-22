@@ -24,8 +24,7 @@ type UpdateUseCaseDto struct {
 	Icon string
 }
 
-func (uc *UpdateUseCase) Run(ctx context.Context, id string, dto UpdateUseCaseDto) (*userDomain.User,error) {
-	// dtoからuserへ変換
+func (uc *UpdateUseCase) Run(ctx context.Context, id string, dto UpdateUseCaseDto) (*FindUserUseCaseDto,error) {
 	user ,err := uc.userRepo.FindUser(ctx,id)
 	if err != nil {
         return nil,err
@@ -42,5 +41,16 @@ func (uc *UpdateUseCase) Run(ctx context.Context, id string, dto UpdateUseCaseDt
 	if err != nil {
 		return nil, err
 	}
-	return updatedUser,nil
+	return &FindUserUseCaseDto{
+		ID:          updatedUser.ID(),
+		LastName:    updatedUser.LastName(),
+		FirstName:   updatedUser.FirstName(),
+		Email:       updatedUser.Email(),
+		Password:    updatedUser.Password(),
+		Icon:        updatedUser.Icon(),
+		GroupIDs:    updatedUser.GroupIDs(),
+		EventIDs:    updatedUser.EventIDs(),
+		CreatedAt:   updatedUser.CreatedAt(),
+        UpdatedAt:   updatedUser.UpdatedAt(),
+	}, nil
 }

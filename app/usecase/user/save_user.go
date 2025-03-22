@@ -25,15 +25,30 @@ type SaveUseCaseDto struct {
 	Icon string
 }
 
-func (uc *SaveUseCase) Run(ctx context.Context, dto SaveUseCaseDto) (*userDomain.User,error) {
+func (uc *SaveUseCase) Run(ctx context.Context, dto SaveUseCaseDto) (*FindUserUseCaseDto,error) {
 	// dtoからuserへ変換
-	user, err := userDomain.NewUser(dto.LastName, dto.FirstName, dto.Email, dto.Password, dto.Icon)
+	nuser, err := userDomain.NewUser(dto.LastName, dto.FirstName, dto.Email, dto.Password, dto.Icon)
 	if err != nil {
 		return nil,err
 	}
-	err = uc.userRepo.Save(ctx, user)
+	err = uc.userRepo.Save(ctx, nuser)
 	if err != nil {
 		return nil,err
 	}
-	return uc.userRepo.FindUser(ctx,user.ID())
+	user,err := uc.userRepo.FindUser(ctx,nuser.ID())
+	if err != nil {
+		return nil,err
+	}
+	return &FindUserUseCaseDto{
+		ID:          user.ID(),
+		LastName:    user.LastName(),
+		FirstName:   user.FirstName(),
+		Email:       user.Email(),
+		Password:    user.Password(),
+		Icon:        user.Icon(),
+		GroupIDs:    user.GroupIDs(),
+		EventIDs:    user.EventIDs(),
+		CreatedAt:   user.CreatedAt(),
+        UpdatedAt:   user.UpdatedAt(),
+	}, nil
 }
