@@ -28,7 +28,7 @@ func(mr *mailService) SendEmail(email string, code string) error {
     mg := mailgun.NewMailgun(mailgunDomain, mailgunPrivateAPIKey)
 
     // メッセージの作成
-    subject := "segon_pixの認証コード"
+    subject := "認証コード"
     body := "認証コード: "+code
     message := mg.NewMessage(
         senderEmail,

@@ -69,6 +69,8 @@ func connect(user string, password string, host string, port string, name string
 		connect := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, password, host, port, name)
 		db, err := sql.Open("mysql", connect)
 		if err != nil {
+			log.Printf("Error opening DB connection: %v", err)
+
 			return nil, fmt.Errorf("could not open db: %w", err)
 		}
 

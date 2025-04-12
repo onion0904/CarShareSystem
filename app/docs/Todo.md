@@ -10,7 +10,7 @@
 - docs
 
 ## todo
-- unit test
-    -usecase, infra, presen
+- authの確認
+    - resolver内にあるsignup,inを踏まえてjwtを使った認証をmiddleware/auth.goに実装
 - E2E test
 - CI/CD

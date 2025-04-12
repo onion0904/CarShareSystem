@@ -25,28 +25,28 @@ services:
       timeout: 5s
       retries: 10
 
-  api:
-    build:
-      context: .
-      dockerfile: ./ops/docker/app/Dockerfile
-    depends_on:
-      db:
-        condition: service_healthy     # DBサービスの健康チェック
-    environment:
-      DB_HOST: ${DB_HOST}              # DBのホスト名
-      DB_PORT: ${DB_PORT}              # DBのポート番号
-      DB_USER: ${DB_USER}              # DBユーザー名
-      DB_PASSWORD: ${DB_PASSWORD}      # DBユーザーパスワード
-      DB_NAME: ${DB_NAME}              # 使用するデータベース名
-    ports:
-      - "8080:8080"                    # APIのポート
-    volumes:
-      - ./myapp-437007-bdde37cabb9b.json:/app/myapp-437007-bdde37cabb9b.json # アプリ設定ファイルのボリュームマウント
-    working_dir: /app                  # 作業ディレクトリ
-    tty: true                          # TTYを有効にする
-    restart: always
-    networks:
-      - app-network
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: ./ops/docker/app/Dockerfile
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy     # DBサービスの健康チェック
+  #   environment:
+  #     DB_HOST: ${DB_HOST}              # DBのホスト名
+  #     DB_PORT: ${DB_PORT}              # DBのポート番号
+  #     DB_USER: ${DB_USER}              # DBユーザー名
+  #     DB_PASSWORD: ${DB_PASSWORD}      # DBユーザーパスワード
+  #     DB_NAME: ${DB_NAME}              # 使用するデータベース名
+  #   ports:
+  #     - "8080:8080"                    # APIのポート
+  #   volumes:
+  #     - ./myapp-437007-bdde37cabb9b.json:/app/myapp-437007-bdde37cabb9b.json # アプリ設定ファイルのボリュームマウント
+  #   working_dir: /app                  # 作業ディレクトリ
+  #   tty: true                          # TTYを有効にする
+  #   restart: always
+  #   networks:
+  #     - app-network
 
 volumes:
   db_data:

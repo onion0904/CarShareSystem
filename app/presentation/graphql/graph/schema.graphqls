@@ -2,6 +2,8 @@
 # "2025-02-02T12:00:00Z" のような形式
 scalar DateTime
 
+directive @isAuthenticated on FIELD_DEFINITION
+
 # User型の定義
 type User {
   id: String!
@@ -47,17 +49,17 @@ type Event {
 # クエリの定義(データの取得のエンドポイント)
 type Query {
   # ユーザー関連
-  user(id: String!): User!
-  users: [User!]!
+  user(id: String!): User! @isAuthenticated
+  users: [User!]! @isAuthenticated
 
   # グループ関連
-  group(id: String!): Group!
-  groups: [Group!]!
+  group(id: String!): Group! @isAuthenticated 
+  groups: [Group!]! @isAuthenticated
 
   # イベント関連
-  event(id: String!): Event!
-  events: [Event!]!
-  eventsByMonth(input: MonthlyEventInput!): [String!]!
+  event(id: String!): Event! @isAuthenticated
+  events: [Event!]! @isAuthenticated
+  eventsByMonth(input: MonthlyEventInput!): [String!]! @isAuthenticated
 }
 
 # 入力型の定義
@@ -127,20 +129,20 @@ type AuthUserResponse {
 type Mutation {
   # ユーザー関連
   createUser(input: CreateUserInput!): User!
-  updateUser(id: String!, input: UpdateUserInput!): User!
-  deleteUser(id: String!): Boolean!
+  updateUser(id: String!, input: UpdateUserInput!): User! @isAuthenticated
+  deleteUser(id: String!): Boolean! @isAuthenticated
 
   # グループ関連
-  createGroup(input: CreateGroupInput!): Group!
-  updateGroup(id: String!, input: UpdateGroupInput!): Group!
-  deleteGroup(id: String!): Boolean!
-  addUserToGroup(groupID: String!, userID: String!): Group!
-  removeUserFromGroup(groupID: String!, userID: String!): Group!
-  addEventToGroup(groupID: String!, eventID: String!): Group!
+  createGroup(input: CreateGroupInput!): Group! @isAuthenticated
+  updateGroup(id: String!, input: UpdateGroupInput!): Group! @isAuthenticated
+  deleteGroup(id: String!): Boolean! @isAuthenticated
+  addUserToGroup(groupID: String!, userID: String!): Group! @isAuthenticated
+  removeUserFromGroup(groupID: String!, userID: String!): Group! @isAuthenticated
+  addEventToGroup(groupID: String!, eventID: String!): Group! @isAuthenticated
 
   # イベント関連
-  createEvent(input: CreateEventInput!): Event!
-  deleteEvent(id: String!): Boolean!
+  createEvent(input: CreateEventInput!): Event! @isAuthenticated
+  deleteEvent(id: String!): Boolean! @isAuthenticated
 
   # メール、認証関連
   sendVerificationCode(email: String!): Boolean!

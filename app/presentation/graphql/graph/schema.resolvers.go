@@ -25,7 +25,7 @@ import (
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUserInput) (*model.User, error) {
-	userRepo := repo.NewUserRepository()
+	userRepo := repo.NewUserRepository(r.DB)
 	create := usecase_user.NewSaveUserUseCase(userRepo)
 
 	DTO := usecase_user.SaveUseCaseDto{
@@ -57,7 +57,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input model.UpdateUserInput) (*model.User, error) {
-	userRepo := repo.NewUserRepository()
+	userRepo := repo.NewUserRepository(r.DB)
 	update := usecase_user.NewUpdateUserUseCase(userRepo)
 	DTO := usecase_user.UpdateUseCaseDto{
 		LastName:  *input.LastName,
@@ -86,7 +86,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input mode
 
 // DeleteUser is the resolver for the deleteUser field.
 func (r *mutationResolver) DeleteUser(ctx context.Context, id string) (bool, error) {
-	userRepo := repo.NewUserRepository()
+	userRepo := repo.NewUserRepository(r.DB)
 	delete := usecase_user.NewDeleteUseCase(userRepo)
 	err := delete.Run(ctx, id)
 	if err != nil {
@@ -97,7 +97,7 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, id string) (bool, err
 
 // CreateGroup is the resolver for the createGroup field.
 func (r *mutationResolver) CreateGroup(ctx context.Context, input model.CreateGroupInput) (*model.Group, error) {
-	groupRepo := repo.NewGroupRepository()
+	groupRepo := repo.NewGroupRepository(r.DB)
 	create := usecase_group.NewSaveUseCase(groupRepo)
 
 	DTO := usecase_group.SaveUseCaseDto{
@@ -123,7 +123,7 @@ func (r *mutationResolver) CreateGroup(ctx context.Context, input model.CreateGr
 
 // UpdateGroup is the resolver for the updateGroup field.
 func (r *mutationResolver) UpdateGroup(ctx context.Context, id string, input model.UpdateGroupInput) (*model.Group, error) {
-	groupRepo := repo.NewGroupRepository()
+	groupRepo := repo.NewGroupRepository(r.DB)
 	update := usecase_group.NewUpdateUseCase(groupRepo)
 	DTO := usecase_group.UpdateUseCaseDto{
 		Name: *input.Name,
@@ -147,7 +147,7 @@ func (r *mutationResolver) UpdateGroup(ctx context.Context, id string, input mod
 
 // DeleteGroup is the resolver for the deleteGroup field.
 func (r *mutationResolver) DeleteGroup(ctx context.Context, id string) (bool, error) {
-	groupRepo := repo.NewGroupRepository()
+	groupRepo := repo.NewGroupRepository(r.DB)
 	delete := usecase_group.NewDeleteUseCase(groupRepo)
 	err := delete.Run(ctx, id)
 	if err != nil {
@@ -158,7 +158,7 @@ func (r *mutationResolver) DeleteGroup(ctx context.Context, id string) (bool, er
 
 // AddUserToGroup is the resolver for the addUserToGroup field.
 func (r *mutationResolver) AddUserToGroup(ctx context.Context, groupID string, userID string) (*model.Group, error) {
-	groupRepo := repo.NewGroupRepository()
+	groupRepo := repo.NewGroupRepository(r.DB)
 	addUser := usecase_group.NewAddUserToGroupUseCase(groupRepo)
 	DTO := usecase_group.AddUserToGroupUseCaseDto{
 		UserID:  userID,
@@ -182,7 +182,7 @@ func (r *mutationResolver) AddUserToGroup(ctx context.Context, groupID string, u
 
 // RemoveUserFromGroup is the resolver for the removeUserFromGroup field.
 func (r *mutationResolver) RemoveUserFromGroup(ctx context.Context, groupID string, userID string) (*model.Group, error) {
-	groupRepo := repo.NewGroupRepository()
+	groupRepo := repo.NewGroupRepository(r.DB)
 	removeUser := usecase_group.NewRemoveUserToGroupUseCase(groupRepo)
 	DTO := usecase_group.RemoveUserFromGroupUseCaseDto{
 		UserID:  userID,
@@ -206,7 +206,7 @@ func (r *mutationResolver) RemoveUserFromGroup(ctx context.Context, groupID stri
 
 // AddEventToGroup is the resolver for the addEventToGroup field.
 func (r *mutationResolver) AddEventToGroup(ctx context.Context, groupID string, eventID string) (*model.Group, error) {
-	groupRepo := repo.NewGroupRepository()
+	groupRepo := repo.NewGroupRepository(r.DB)
 	addEvent := usecase_group.NewAddEventToGroupUseCase(groupRepo)
 	DTO := usecase_group.AddEventToGroupUseCaseDto{
 		EventID: eventID,
@@ -230,7 +230,7 @@ func (r *mutationResolver) AddEventToGroup(ctx context.Context, groupID string, 
 
 // CreateEvent is the resolver for the createEvent field.
 func (r *mutationResolver) CreateEvent(ctx context.Context, input model.CreateEventInput) (*model.Event, error) {
-	eventRepo := repo.NewEventRepository()
+	eventRepo := repo.NewEventRepository(r.DB)
 	create := usecase_event.NewEventUseCase(domain_event.NewEventDomainService(eventRepo))
 	DTO := usecase_event.AddEventUseCaseDTO{
 		UsersID:     input.UserID,
@@ -262,7 +262,7 @@ func (r *mutationResolver) CreateEvent(ctx context.Context, input model.CreateEv
 
 // DeleteEvent is the resolver for the deleteEvent field.
 func (r *mutationResolver) DeleteEvent(ctx context.Context, id string) (bool, error) {
-	eventRepo := repo.NewEventRepository()
+	eventRepo := repo.NewEventRepository(r.DB)
 	delete := usecase_event.NewDeleteUseCase(eventRepo)
 	err := delete.Run(ctx, id)
 	if err != nil {
@@ -315,7 +315,7 @@ func (r *mutationResolver) Signup(ctx context.Context, input model.CreateUserInp
 	if input.Email == "" || input.Password == "" || vcode == "" {
 		return nil, errDomain.NewError("Email or Password or verified code is not set")
 	}
-	userRepo := repo.NewUserRepository()
+	userRepo := repo.NewUserRepository(r.DB)
 	exist, err := userRepo.ExistUser(ctx, input.Email, input.Password)
 	if err != nil {
 		return nil, err
@@ -370,7 +370,7 @@ func (r *mutationResolver) Signin(ctx context.Context, email string, password st
 	if email == "" || password == "" {
 		return nil, errDomain.NewError("Email or Password or verified code is not set")
 	}
-	userRepo := repo.NewUserRepository()
+	userRepo := repo.NewUserRepository(r.DB)
 	exist, err := userRepo.ExistUser(ctx, email, password)
 	if err != nil {
 		return nil, err
@@ -411,7 +411,7 @@ func (r *mutationResolver) Signin(ctx context.Context, email string, password st
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	userRepo := repo.NewUserRepository()
+	userRepo := repo.NewUserRepository(r.DB)
 	find := usecase_user.NewFindUserUseCase(userRepo)
 	user, err := find.Run(ctx, id)
 	if err != nil {
@@ -439,7 +439,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 
 // Group is the resolver for the group field.
 func (r *queryResolver) Group(ctx context.Context, id string) (*model.Group, error) {
-	groupRepo := repo.NewGroupRepository()
+	groupRepo := repo.NewGroupRepository(r.DB)
 	find := usecase_group.NewFindGroupUseCase(groupRepo)
 	group, err := find.Run(ctx, id)
 	if err != nil {
@@ -464,7 +464,7 @@ func (r *queryResolver) Groups(ctx context.Context) ([]*model.Group, error) {
 
 // Event is the resolver for the event field.
 func (r *queryResolver) Event(ctx context.Context, id string) (*model.Event, error) {
-	eventRepo := repo.NewEventRepository()
+	eventRepo := repo.NewEventRepository(r.DB)
 	find := usecase_event.NewFindEventUseCase(eventRepo)
 	event, err := find.Run(ctx, id)
 	if err != nil {
@@ -495,7 +495,7 @@ func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
 
 // EventsByMonth is the resolver for the eventsByMonth field.
 func (r *queryResolver) EventsByMonth(ctx context.Context, input model.MonthlyEventInput) ([]string, error) {
-	eventRepo := repo.NewEventRepository()
+	eventRepo := repo.NewEventRepository(r.DB)
 	find := usecase_event.NewFindMonthEventUseCase(eventRepo)
 	events, err := find.Run(ctx, input.Year, input.Month)
 	if err != nil {

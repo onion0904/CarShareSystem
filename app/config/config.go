@@ -1,40 +1,42 @@
 package config
 
 import (
+	"os"
 	"sync"
-
-	"github.com/kelseyhightower/envconfig"
+	"log"
+	"path/filepath"
+	
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	Server Server
-	DB     DBConfig
+	Server  Server
+	DB      DBConfig
 	Mailgun Mailgun
 	JWT     JWT
 }
 
 type DBConfig struct {
-	Name     string `envconfig:"DB_DATABASE" default:"CarShareSystemDB"`
-	User     string `envconfig:"DB_USER" default:"root"`
-	Password string `envconfig:"DB_PASS" default:""`
-	Port     string `envconfig:"DB_PORT" default:"3306"`
-	Host     string `envconfig:"DB_HOST" default:"db"`
+	Name     string
+	User     string
+	Password string
+	Port     string
+	Host     string
 }
 
 type Server struct {
-	Address string `envconfig:"ADDRESS" default:"0.0.0.0"`
-	Port    string `envconfig:"PORT" default:"8080"`
+	Port string
 }
 
 type Mailgun struct {
-	Domain string `envconfig:"MAILGUN_DOMAIN"`
-	Private_Key string `envconfig:"MAILGUN_PRIVATE_API_KEY"`
-	Sender_email string `envconfig:"SENDER_EMAIL"`
-	Recipient_email string `envconfig:"RECIPIENT_EMAIL"`
+	Domain          string
+	Private_Key     string
+	Sender_email    string
+	Recipient_email string
 }
 
 type JWT struct {
-	Secret string `envconfig:"JWT_SECRET"`
+	Secret string
 }
 
 var (
@@ -45,9 +47,37 @@ var (
 func GetConfig() *Config {
 	// goroutine実行中でも一度だけ実行される
 	once.Do(func() {
-		if err := envconfig.Process("", &config); err != nil {
-			panic(err)
+		envFile := filepath.Join("..", "..", "config", ".env")
+		err := godotenv.Load(envFile)
+		if err != nil {
+			log.Fatalf("Error loading .env file")
 		}
+		// DBConfig
+		config.DB.Name = getEnv("DB_NAME", "")
+		config.DB.User = getEnv("DB_USER", "")
+		config.DB.Password = getEnv("DB_PASSWORD", "")
+		config.DB.Port = getEnv("DB_PORT", "")
+		config.DB.Host = getEnv("DB_HOST", "")
+
+		// Server
+		config.Server.Port = getEnv("SERVER_PORT", "")
+
+		// Mailgun
+		config.Mailgun.Domain = getEnv("MAILGUN_DOMAIN", "")
+		config.Mailgun.Private_Key = getEnv("MAILGUN_PRIVATE_API_KEY", "")
+		config.Mailgun.Sender_email = getEnv("SENDER_EMAIL", "")
+		config.Mailgun.Recipient_email = getEnv("RECIPIENT_EMAIL", "")
+
+		// JWT
+		config.JWT.Secret = getEnv("JWT_SECRET", "")
 	})
 	return &config
+}
+
+// getEnv は環境変数を取得し、指定されたデフォルト値を返す
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }

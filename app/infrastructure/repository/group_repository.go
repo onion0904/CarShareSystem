@@ -11,10 +11,12 @@ import (
 	dbgen "github.com/onion0904/app/infrastructure/db/sqlc/dbgen"
 )
 
-type groupRepository struct {}
+type groupRepository struct {
+	db *sql.DB
+}
 
-func NewGroupRepository() group.GroupRepository {
-	return &groupRepository{}
+func NewGroupRepository(db *sql.DB) group.GroupRepository {
+	return &groupRepository{db: db}
 }
 
 func (gr *groupRepository)Update(ctx context.Context, group *group.Group) error {

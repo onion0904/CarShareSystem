@@ -11,10 +11,12 @@ import (
 	dbgen "github.com/onion0904/app/infrastructure/db/sqlc/dbgen"
 )
 
-type eventRepository struct {}
+type eventRepository struct {
+	db *sql.DB
+}
 
-func NewEventRepository() event.EventRepository {
-	return &eventRepository{}
+func NewEventRepository(db *sql.DB) event.EventRepository {
+	return &eventRepository{db: db}
 }
 
 func (er *eventRepository)SaveEvent(ctx context.Context, event *event.Event) error {

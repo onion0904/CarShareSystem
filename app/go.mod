@@ -7,7 +7,7 @@ toolchain go1.22.11
 require (
 	github.com/99designs/gqlgen v0.17.64
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-jwt/v4 v4.3.0
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/mailgun/mailgun-go/v4 v4.22.1

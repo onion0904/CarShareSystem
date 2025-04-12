@@ -11,10 +11,12 @@ import (
 	dbgen "github.com/onion0904/app/infrastructure/db/sqlc/dbgen"
 )
 
-type userRepository struct {}
+type userRepository struct {
+    db *sql.DB
+}
 
-func NewUserRepository() user.UserRepository {
-	return &userRepository{}
+func NewUserRepository(db *sql.DB) user.UserRepository {
+	return &userRepository{db: db}
 }
 
 func (ur *userRepository)Update(ctx context.Context, user *user.User) error {
