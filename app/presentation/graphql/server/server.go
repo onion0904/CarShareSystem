@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"github.com/onion0904/app/config"
 	"github.com/onion0904/app/infrastructure/db"
+	mail_Service "github.com/onion0904/app/infrastructure/mail"
+	usecase_mail "github.com/onion0904/app/usecase/mail"
 	mymiddleware "github.com/onion0904/app/middleware"
 	// "github.com/onion0904/go-pkg/jwt"
 	
@@ -85,7 +87,10 @@ func Start() {
 	Port := cfg.Server.Port
 	
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{
-		Resolvers: &graph.Resolver{DB: DB},
+		Resolvers: &graph.Resolver{
+			DB: DB,
+			EmailUseCase: usecase_mail.NewSendEmailUseCase(mail_Service.NewMailRepository()),
+		},
 		Directives: graph.Directive,
 	}))
 

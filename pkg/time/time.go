@@ -20,3 +20,13 @@ func NextStartWeek() time.Time {
     daysUntilSunday := (7 - int(now.Weekday())) % 7
     return now.AddDate(0, 0, daysUntilSunday+1)
 }
+
+func CreateEventDate(year, month, day int32) time.Time {
+    return time.Date(
+        int(year),              // year は int に変換
+        time.Month(month),      // month は time.Month に変換
+        int(day),               // day も int に変換
+        0, 0, 0, 0,             // 時間（00:00:00.000）
+        time.UTC,               // タイムゾーン
+    )
+}

@@ -35,5 +35,8 @@ func (uc *UpdateUseCase) Run(ctx context.Context,groupID string, dto UpdateUseCa
 		return nil,err
 	}
 	err = uc.groupRepo.Update(ctx, ngroup)
+	if err != nil {
+		return nil,err
+	}
 	return uc.groupRepo.FindGroup(ctx,ngroup.ID())
 }

@@ -12,16 +12,13 @@ type AuthUserResponse struct {
 }
 
 type CreateEventInput struct {
-	UserID      string    `json:"userId"`
-	Together    bool      `json:"together"`
-	Description string    `json:"description"`
-	Year        int32     `json:"year"`
-	Month       int32     `json:"month"`
-	Day         int32     `json:"day"`
-	Date        time.Time `json:"date"`
-	StartDate   time.Time `json:"startDate"`
-	EndDate     time.Time `json:"endDate"`
-	Important   bool      `json:"important"`
+	UserID      string `json:"userId"`
+	Together    bool   `json:"together"`
+	Description string `json:"description"`
+	Year        int32  `json:"year"`
+	Month       int32  `json:"month"`
+	Day         int32  `json:"day"`
+	Important   bool   `json:"important"`
 }
 
 type CreateGroupInput struct {
@@ -76,15 +73,9 @@ type Query struct {
 }
 
 type UpdateEventInput struct {
-	Together    *bool      `json:"together,omitempty"`
-	Description *string    `json:"description,omitempty"`
-	Year        *int32     `json:"year,omitempty"`
-	Month       *int32     `json:"month,omitempty"`
-	Day         *int32     `json:"day,omitempty"`
-	Date        *time.Time `json:"date,omitempty"`
-	StartDate   *time.Time `json:"startDate,omitempty"`
-	EndDate     *time.Time `json:"endDate,omitempty"`
-	Important   *bool      `json:"important,omitempty"`
+	Together    *bool   `json:"together,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Important   *bool   `json:"important,omitempty"`
 }
 
 type UpdateGroupInput struct {

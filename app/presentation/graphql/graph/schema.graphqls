@@ -97,21 +97,12 @@ input CreateEventInput {
   year: Int!
   month: Int!
   day: Int!
-  date: DateTime!
-  startDate: DateTime!
-  endDate: DateTime!
   important: Boolean!
 }
 
 input UpdateEventInput {
   together: Boolean
   description: String
-  year: Int
-  month: Int
-  day: Int
-  date: DateTime
-  startDate: DateTime
-  endDate: DateTime
   important: Boolean
 }
 

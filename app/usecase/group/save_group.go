@@ -30,5 +30,8 @@ func (uc *SaveUseCase) Run(ctx context.Context, dto SaveUseCaseDto) (*groupDomai
 		return nil,err
 	}
 	err = uc.groupRepo.Save(ctx, group)
+	if err != nil {
+		return nil,err
+	}
 	return uc.groupRepo.FindGroup(ctx,group.ID())
 }

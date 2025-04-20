@@ -13,12 +13,15 @@ type Event struct {
 	userID      string
 	together    bool
 	description string
+	// Eventの年月日とそのDate型
 	year        int32
 	month       int32
 	day         int32
 	date        time.Time
+	// 作成日時と更新日時
 	createdAt   time.Time
 	updatedAt   time.Time
+	// 開始日と終了日
 	startDate   time.Time
 	endDate     time.Time
 	important   bool
@@ -57,8 +60,8 @@ func NewEvent(
 	together bool,
 	description string,
 	year int32,
-    month int32,
-    day int32,
+	month int32,
+	day int32,
 	important bool,
 ) (*Event, error) {
 	return newEvent(
@@ -67,9 +70,9 @@ func NewEvent(
 		together,
 		description,
 		year,
-        month,
-        day,
-		pkgTime.Now(),
+		month,
+		day,
+		pkgTime.CreateEventDate(year, month, day),
 		pkgTime.NextStartWeek(),
 		pkgTime.NextEndWeek(),
 		important,
