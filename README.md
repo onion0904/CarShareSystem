@@ -42,8 +42,6 @@
 - orm
     - ~SQLBoiler~ (Maintenance Mode)
     - sqlc
-- framework
-    - echo
 - ログイン認証
     - JWT->OAuthにしていきたい
 - SQL

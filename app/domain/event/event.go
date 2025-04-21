@@ -106,7 +106,7 @@ func newEvent(
 		return nil, errDomain.NewError("year,month,dayの値が範囲外です")
 	}
 
-	// 月ごとの日数チェック（より厳密にする場合）
+	// 月ごとの日数チェック
 	var daysInMonth int32 = 31
 	if month == 4 || month == 6 || month == 9 || month == 11 {
 		daysInMonth = 30
