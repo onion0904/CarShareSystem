@@ -3,10 +3,6 @@ package config
 import (
 	"os"
 	"sync"
-	"log"
-	"path/filepath"
-	
-	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -47,11 +43,6 @@ var (
 func GetConfig() *Config {
 	// goroutine実行中でも一度だけ実行される
 	once.Do(func() {
-		envFile := filepath.Join("..", "..", "config", ".env")
-		err := godotenv.Load(envFile)
-		if err != nil {
-			log.Fatalf("Error loading .env file")
-		}
 		// DBConfig
 		config.DB.Name = getEnv("DB_NAME", "")
 		config.DB.User = getEnv("DB_USER", "")

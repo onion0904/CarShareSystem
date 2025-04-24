@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"github.com/onion0904/app/config"
 	"github.com/onion0904/app/infrastructure/db"
+	"github.com/onion0904/app/infrastructure/db/migrations"
+	"github.com/onion0904/app/presentation/graphql/graph"
 	mail_Service "github.com/onion0904/app/infrastructure/mail"
 	usecase_mail "github.com/onion0904/app/usecase/mail"
 	mymiddleware "github.com/onion0904/app/middleware"
@@ -15,12 +17,12 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/vektah/gqlparser/v2/ast"
-	"github.com/onion0904/app/presentation/graphql/graph"
 )
 
 func Start() {
 	cfg := config.GetConfig()
 	DB := db.NewMainDB(cfg.DB)
+	migrations.Migrate(DB)
 
 	Port := cfg.Server.Port
 	

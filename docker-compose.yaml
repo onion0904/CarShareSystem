@@ -1,6 +1,6 @@
 services:
   db:
-    container_name: DB
+    container_name: db
     image: mysql
     command:
       - --character-set-server=utf8mb4
@@ -18,35 +18,44 @@ services:
       - app-network
     volumes:
       - db_data:/var/lib/mysql          # データ永続化のためのボリューム
+      - ./app/infrastructure/db/authority/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${ROOTPASS}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$${ROOTPASS}"]
       interval: 10s
       timeout: 5s
       retries: 10
 
-  # api:
-  #   build:
-  #     context: .
-  #     dockerfile: ./ops/docker/app/Dockerfile
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy     # DBサービスの健康チェック
-  #   environment:
-  #     DB_HOST: ${DB_HOST}              # DBのホスト名
-  #     DB_PORT: ${DB_PORT}              # DBのポート番号
-  #     DB_USER: ${DB_USER}              # DBユーザー名
-  #     DB_PASSWORD: ${DB_PASSWORD}      # DBユーザーパスワード
-  #     DB_NAME: ${DB_NAME}              # 使用するデータベース名
-  #   ports:
-  #     - "8080:8080"                    # APIのポート
-  #   volumes:
-  #     - ./myapp-437007-bdde37cabb9b.json:/app/myapp-437007-bdde37cabb9b.json # アプリ設定ファイルのボリュームマウント
-  #   working_dir: /app                  # 作業ディレクトリ
-  #   tty: true                          # TTYを有効にする
-  #   restart: always
-  #   networks:
-  #     - app-network
+  api:
+    build:
+      context: .
+      dockerfile: ./ops/docker/app/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy     # DBサービスの健康チェック
+    environment:
+      DB_HOST: ${DB_HOST}              # DBのホスト名
+      DB_PORT: ${DB_PORT}              # DBのポート番号
+      DB_USER: ${DB_USER}              # DBユーザー名
+      DB_PASSWORD: ${DB_PASSWORD}      # DBユーザーパスワード
+      DB_NAME: ${DB_NAME}              # 使用するデータベース名
+      ROOTPASS: ${ROOTPASS}              # DBのルートパスワード
+      ENV_PATH: ${ENV_PATH}            # 環境変数のパス
+      SERVER_PORT: ${SERVER_PORT}        # サーバーポート
+      MAILGUN_DOMAIN: ${MAILGUN_DOMAIN}  # Mailgunのドメイン
+      MAILGUN_PRIVATE_API_KEY: ${MAILGUN_PRIVATE_API_KEY} # MailgunのAPIキー
+      SENDER_EMAIL: ${SENDER_EMAIL}        # 送信者のメールアドレス
+      RECIPIENT_EMAIL: ${RECIPIENT_EMAIL}      # 受信者のメールアドレス
+      JWT_SECRET: ${JWT_SECRET}          # JWTのシークレットキー
+    ports:
+      - "8080:8080"                    # APIのポート
+    working_dir: /app                  # 作業ディレクトリ
+    tty: true                          # TTYを有効にする
+    restart: always
+    networks:
+      - app-network
 
 volumes:
   db_data:

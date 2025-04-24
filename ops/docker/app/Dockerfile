@@ -1,24 +1,36 @@
-FROM golang:1.22 AS builder
+# Builder stage
+FROM golang:1.24.2 AS builder
 
+# 作業ディレクトリを設定
+WORKDIR /workspace
+
+# go.work とあれば go.work.sum をコピー
+COPY go.work* ./
+
+# モジュールディレクトリを丸ごとコピー
+COPY app   ./app
+COPY pkg   ./pkg
+
+# ワークスペース全体の依存を同期
+RUN go work sync
+
+# app モジュールをビルド
+WORKDIR /workspace/app
+RUN go build -o /usr/local/bin/app-server cmd/server/main.go
+
+# 実行ステージ
+FROM golang:1.24.2 AS runner
+# 作業ディレクトリを設定
 WORKDIR /app
 
-# すべてのファイルをコピー
-COPY . .
+# ビルド成果物をコピー
+COPY --from=builder /usr/local/bin/app-server /usr/local/bin/app-server
 
-# app ディレクトリに移動してビルド
-WORKDIR /app/app
-RUN go mod download && go mod tidy
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/server ./cmd/server/main.go
+# マイグレーションファイルをコピー（コード内の相対パスに合わせて配置）
+COPY app/infrastructure/db/migrations /app/infrastructure/db/migrations
 
-FROM alpine:latest
-
-RUN apk --no-cache add ca-certificates
-
-WORKDIR /app
-
-COPY --from=builder /app/server /app/server
-COPY --from=builder /app/myapp-437007-bdde37cabb9b.json /app/myapp-437007-bdde37cabb9b.json
-
+# ポート公開
 EXPOSE 8080
 
-CMD ["/app/server"]
+# エントリポイント
+ENTRYPOINT ["app-server"]
