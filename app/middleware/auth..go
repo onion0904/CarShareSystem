@@ -3,18 +3,17 @@ package middleware
 // 参照元 https://zenn.dev/hsaki/books/golang-graphql/viewer/auth
 
 import (
+	"fmt"
 	"context"
-	"errors"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/onion0904/app/config"
+	"github.com/onion0904/go-pkg/jwt"
 )
 
-type userNameKey struct{}
-
-const (
-	tokenPrefix = "UT"
-)
+type userIDKey struct{}
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -24,20 +23,20 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		userName, err := validateToken(token)
+		userID, err := validateToken(token)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, `{"reason": "invalid token"}`, http.StatusUnauthorized)
 			return
 		}
 
-		ctx := context.WithValue(req.Context(), userNameKey{}, userName)
+		ctx := context.WithValue(req.Context(), userIDKey{}, userID)
 		next.ServeHTTP(w, req.WithContext(ctx))
 	})
 }
 
-func GetUserName(ctx context.Context) (string, bool) {
-	switch v := ctx.Value(userNameKey{}).(type) {
+func GetUserID(ctx context.Context) (string, bool) {
+	switch v := ctx.Value(userIDKey{}).(type) {
 	case string:
 		return v, true
 	default:
@@ -46,14 +45,16 @@ func GetUserName(ctx context.Context) (string, bool) {
 }
 
 func validateToken(token string) (string, error) {
-	tElems := strings.SplitN(token, "_", 2)
-	if len(tElems) < 2 {
-		return "", errors.New("invalid token")
+	config := config.GetConfig()
+	secretkey := config.JWT.Secret
+	if strings.HasPrefix(token, "Bearer ") {
+		token = strings.TrimPrefix(token, "Bearer ")
+	}
+	fmt.Println("Received Token:", token)
+	claims, err := jwt.ParseJWT(token,[]byte(secretkey))
+	if err != nil {
+		return "", err
 	}
 
-	tType, tUserName := tElems[0], tElems[1]
-	if tType != tokenPrefix {
-		return "", errors.New("invalid token")
-	}
-	return tUserName, nil
+	return claims.UserID, nil
 }

@@ -13,6 +13,7 @@ import (
 	errDomain "github.com/onion0904/app/domain/error"
 	domain_event "github.com/onion0904/app/domain/event"
 	repo "github.com/onion0904/app/infrastructure/repository"
+	"github.com/onion0904/app/middleware"
 	"github.com/onion0904/app/presentation/graphql/graph/model"
 	usecase_event "github.com/onion0904/app/usecase/event"
 	usecase_group "github.com/onion0904/app/usecase/group"
@@ -20,51 +21,22 @@ import (
 	usecase_user "github.com/onion0904/app/usecase/user"
 	"github.com/onion0904/go-pkg/jwt"
 	VerifiedCode "github.com/onion0904/go-pkg/verified_code"
+	"golang.org/x/crypto/bcrypt"
 )
 
-// CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUserInput) (*model.User, error) {
-	userRepo := repo.NewUserRepository(r.DB)
-	create := usecase_user.NewSaveUserUseCase(userRepo)
-
-	DTO := usecase_user.SaveUseCaseDto{
-		LastName:  input.LastName,
-		FirstName: input.FirstName,
-		Email:     input.Email,
-		Password:  input.Password,
-		Icon:      input.Icon,
-	}
-
-	user, err := create.Run(ctx, DTO)
-	if err != nil {
-		return nil, err
-	}
-	nuser := model.User{
-		ID:        user.ID,
-		LastName:  user.LastName,
-		FirstName: user.FirstName,
-		Email:     user.Email,
-		Password:  user.Password,
-		Icon:      user.Icon,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-		GroupIDs:  user.GroupIDs,
-		EventIDs:  user.EventIDs,
-	}
-	return &nuser, nil
-}
-
 // UpdateUser is the resolver for the updateUser field.
-func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input model.UpdateUserInput) (*model.User, error) {
+func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUserInput) (*model.User, error) {
 	userRepo := repo.NewUserRepository(r.DB)
 	update := usecase_user.NewUpdateUserUseCase(userRepo)
+	//ctx から取った userID を使うことで 「なりすまし」を防ぐ
+	userID, _ := middleware.GetUserID(ctx)
 	DTO := usecase_user.UpdateUseCaseDto{
 		LastName:  *input.LastName,
 		FirstName: *input.FirstName,
 		Email:     *input.Email,
 		Icon:      *input.Icon,
 	}
-	user, err := update.Run(ctx, id, DTO)
+	user, err := update.Run(ctx, userID, DTO)
 	if err != nil {
 		return nil, err
 	}
@@ -84,10 +56,12 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input mode
 }
 
 // DeleteUser is the resolver for the deleteUser field.
-func (r *mutationResolver) DeleteUser(ctx context.Context, id string) (bool, error) {
+func (r *mutationResolver) DeleteUser(ctx context.Context) (bool, error) {
 	userRepo := repo.NewUserRepository(r.DB)
 	delete := usecase_user.NewDeleteUseCase(userRepo)
-	err := delete.Run(ctx, id)
+	//ctx から取った userID を使うことで 「なりすまし」を防ぐ
+	userID, _ := middleware.GetUserID(ctx)
+	err := delete.Run(ctx, userID)
 	if err != nil {
 		return false, err
 	}
@@ -290,10 +264,6 @@ func (r *mutationResolver) SendVerificationCode(ctx context.Context, email strin
 	r.EmailUseCase.CodeMutex.Lock()
 	r.EmailUseCase.VerificationCodes[email] = vcode
 	r.EmailUseCase.CodeMutex.Unlock()
-
-	fmt.Printf("SendVerificationCode - VerificationCodes pointer: %p\n", &r.EmailUseCase.VerificationCodes)
-	fmt.Println("Added code:", vcode)
-
 	// メール送信
 	DTO := usecase_mail.SendEmailUseCaseDto{
 		Email: email,
@@ -327,11 +297,7 @@ func (r *mutationResolver) Signup(ctx context.Context, input model.CreateUserInp
 
 	r.EmailUseCase.CodeMutex.Lock()
 	expectedCode, exists := r.EmailUseCase.VerificationCodes[input.Email]
-	fmt.Println("expectedCode", expectedCode)
 	r.EmailUseCase.CodeMutex.Unlock()
-
-	fmt.Printf("Signup - VerificationCodes pointer: %p\n", &r.EmailUseCase.VerificationCodes)
-	fmt.Println("Expected code for", input.Email, ":", expectedCode)
 
 	if !exists {
 		return nil, errDomain.NewError("verified code is not found")
@@ -345,20 +311,42 @@ func (r *mutationResolver) Signup(ctx context.Context, input model.CreateUserInp
 	delete(r.EmailUseCase.VerificationCodes, input.Email)
 	r.EmailUseCase.CodeMutex.Unlock()
 
-	user, err := r.CreateUser(ctx, input)
+	create := usecase_user.NewSaveUserUseCase(userRepo)
+
+	DTO := usecase_user.SaveUseCaseDto{
+		LastName:  input.LastName,
+		FirstName: input.FirstName,
+		Email:     input.Email,
+		Password:  input.Password,
+		Icon:      input.Icon,
+	}
+
+	user, err := create.Run(ctx, DTO)
 	if err != nil {
 		return nil, err
+	}
+	nuser := model.User{
+		ID:        user.ID,
+		LastName:  user.LastName,
+		FirstName: user.FirstName,
+		Email:     user.Email,
+		Password:  user.Password,
+		Icon:      user.Icon,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		GroupIDs:  user.GroupIDs,
+		EventIDs:  user.EventIDs,
 	}
 
 	customClaim := jwt.NewCustomClaims(user.Email, user.ID)
 	token := jwt.CreateToken(customClaim)
-	tokenString, err := token.SignedString(jwtSecret)
+	tokenString, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
 		return nil, err
 	}
 	return &model.AuthUserResponse{
 		Token: tokenString,
-		User:  user,
+		User:  &nuser,
 	}, nil
 }
 
@@ -389,6 +377,13 @@ func (r *mutationResolver) Signin(ctx context.Context, email string, password st
 	if err != nil {
 		return nil, err
 	}
+
+	//hashパスワードと平文パスワードで比較
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return nil, errDomain.NewError("invalid credentials")
+	}
+
 	nuser := model.User{
 		ID:        user.ID,
 		LastName:  user.LastName,
@@ -415,10 +410,16 @@ func (r *mutationResolver) Signin(ctx context.Context, email string, password st
 }
 
 // User is the resolver for the user field.
-func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
+func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 	userRepo := repo.NewUserRepository(r.DB)
 	find := usecase_user.NewFindUserUseCase(userRepo)
-	user, err := find.Run(ctx, id)
+	//ctx から取った userID を使うことで 「なりすまし」を防ぐ
+	userID, ok := middleware.GetUserID(ctx)
+	if !ok {
+		fmt.Println("UserID:", userID)
+		return nil, errDomain.NewError("not authenticate")
+	}
+	user, err := find.Run(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -435,11 +436,6 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 		EventIDs:  user.EventIDs,
 	}
 	return &nuser, nil
-}
-
-// Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented: Users - users"))
 }
 
 // Group is the resolver for the group field.
@@ -460,11 +456,6 @@ func (r *queryResolver) Group(ctx context.Context, id string) (*model.Group, err
 		EventIDs:  group.EventIDs,
 	}
 	return &ngroup, nil
-}
-
-// Groups is the resolver for the groups field.
-func (r *queryResolver) Groups(ctx context.Context) ([]*model.Group, error) {
-	panic(fmt.Errorf("not implemented: Groups - groups"))
 }
 
 // Event is the resolver for the event field.
@@ -491,11 +482,6 @@ func (r *queryResolver) Event(ctx context.Context, id string) (*model.Event, err
 		Important:   event.Important,
 	}
 	return &nevent, nil
-}
-
-// Events is the resolver for the events field.
-func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
-	panic(fmt.Errorf("not implemented: Events - events"))
 }
 
 // EventsByMonth is the resolver for the eventsByMonth field.

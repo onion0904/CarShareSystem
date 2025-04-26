@@ -49,16 +49,13 @@ type Event {
 # クエリの定義(データの取得のエンドポイント)
 type Query {
   # ユーザー関連
-  user(id: String!): User! @isAuthenticated
-  users: [User!]! @isAuthenticated
+  user: User! @isAuthenticated
 
   # グループ関連
   group(id: String!): Group! @isAuthenticated 
-  groups: [Group!]! @isAuthenticated
 
   # イベント関連
   event(id: String!): Event! @isAuthenticated
-  events: [Event!]! @isAuthenticated
   eventsByMonth(input: MonthlyEventInput!): [String!]! @isAuthenticated
 }
 
@@ -119,9 +116,8 @@ type AuthUserResponse {
 # ミューテーションの定義(データの作成、更新、削除のエンドポイント)
 type Mutation {
   # ユーザー関連
-  createUser(input: CreateUserInput!): User!
-  updateUser(id: String!, input: UpdateUserInput!): User! @isAuthenticated
-  deleteUser(id: String!): Boolean! @isAuthenticated
+  updateUser(input: UpdateUserInput!): User! @isAuthenticated
+  deleteUser: Boolean! @isAuthenticated
 
   # グループ関連
   createGroup(input: CreateGroupInput!): Group! @isAuthenticated

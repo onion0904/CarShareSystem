@@ -16,8 +16,6 @@ func NewMailRepository() mailDomain.MailService {
 }
 
 func(mr *mailService) SendEmail(email string, code string) error {
-    fmt.Println("メールをこれから送る")
-
     mailConfig := config.GetConfig()
     mailgunDomain := mailConfig.Mailgun.Domain
     mailgunPrivateAPIKey := mailConfig.Mailgun.Private_Key
@@ -43,12 +41,11 @@ func(mr *mailService) SendEmail(email string, code string) error {
     defer cancel()
 
     // メールの送信
-    resp, id, err := mg.Send(ctx, message)
+    _, _, err := mg.Send(ctx, message)
     if err != nil {
         fmt.Println("メールの送信に失敗しました:", err)
         return err
     }
 
-    fmt.Printf("メールが正常に送信されました。ID: %s Resp: %s\n", id, resp)
     return nil
 }

@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"golang.org/x/crypto/bcrypt"
 	userDomain "github.com/onion0904/app/domain/user"
 )
 
@@ -26,8 +27,14 @@ type SaveUseCaseDto struct {
 }
 
 func (uc *SaveUseCase) Run(ctx context.Context, dto SaveUseCaseDto) (*FindUserUseCaseDto,error) {
+	//パスワードをハッシュ化
+	password, err := bcrypt.GenerateFromPassword([]byte(dto.Password), bcrypt.DefaultCost)
+    if err != nil {
+        return nil, err
+    }
+	
 	// dtoからuserへ変換
-	nuser, err := userDomain.NewUser(dto.LastName, dto.FirstName, dto.Email, dto.Password, dto.Icon)
+	nuser, err := userDomain.NewUser(dto.LastName, dto.FirstName, dto.Email, string(password), dto.Icon)
 	if err != nil {
 		return nil,err
 	}
