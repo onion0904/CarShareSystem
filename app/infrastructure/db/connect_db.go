@@ -67,7 +67,6 @@ func NewMainDB(cnf config.DBConfig) *sql.DB {
 func connect(user string, password string, host string, port string, name string) (*sql.DB, error) {
 	for i := 0; i < maxRetries; i++ {
 		connect := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, password, host, port, name)
-		log.Printf("Connecting to DB: %s", connect)
 		db, err := sql.Open("mysql", connect)
 		if err != nil {
 			log.Printf("Error opening DB connection: %v", err)
