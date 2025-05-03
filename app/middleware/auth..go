@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/onion0904/app/config"
-	"github.com/onion0904/go-pkg/jwt"
+	"github.com/onion0904/CarShareSystem/app/config"
+	"github.com/onion0904/CarShareSystem/pkg/jwt"
 )
 
 type userIDKey struct{}

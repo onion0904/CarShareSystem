@@ -5,7 +5,7 @@ import (
     "encoding/base64"
     "fmt"
 
-    groupDomain "github.com/onion0904/app/domain/group"
+    groupDomain "github.com/onion0904/CarShareSystem/app/domain/group"
     "github.com/skip2/go-qrcode" // QRコード生成ライブラリ
 )
 

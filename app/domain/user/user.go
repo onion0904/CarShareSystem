@@ -3,8 +3,8 @@ package user
 import (
 	"net/mail"
 	"unicode/utf8"
-	"github.com/onion0904/go-pkg/ulid"
-	errDomain "github.com/onion0904/app/domain/error"
+	"github.com/onion0904/CarShareSystem/pkg/ulid"
+	errDomain "github.com/onion0904/CarShareSystem/app/domain/error"
 	"time"
 )
 

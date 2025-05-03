@@ -9,7 +9,7 @@ import (
 
 	"go.uber.org/mock/gomock"
 
-	userDomain "github.com/onion0904/app/domain/user"
+	userDomain "github.com/onion0904/CarShareSystem/app/domain/user"
 )
 
 func TestUpdateUseCaseRun(t *testing.T) {

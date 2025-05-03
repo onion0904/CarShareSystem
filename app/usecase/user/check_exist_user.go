@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	userDomain "github.com/onion0904/app/domain/user"
+	userDomain "github.com/onion0904/CarShareSystem/app/domain/user"
 )
 
 type CheckExistUserUseCase struct {

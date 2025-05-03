@@ -2,7 +2,7 @@ package graph
 
 import (
 	"database/sql"
-	usecase_mail "github.com/onion0904/app/usecase/mail"
+	usecase_mail "github.com/onion0904/CarShareSystem/app/usecase/mail"
 )
 
 

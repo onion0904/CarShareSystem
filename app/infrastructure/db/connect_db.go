@@ -9,8 +9,8 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/onion0904/app/config"
-	dbgen "github.com/onion0904/app/infrastructure/db/sqlc/dbgen"
+	"github.com/onion0904/CarShareSystem/app/config"
+	dbgen "github.com/onion0904/CarShareSystem/app/infrastructure/db/sqlc/dbgen"
 )
 
 const maxRetries = 5

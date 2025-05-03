@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"errors"
 
-	errDomain "github.com/onion0904/app/domain/error"
-    "github.com/onion0904/app/domain/group"
-	"github.com/onion0904/app/infrastructure/db"
-	dbgen "github.com/onion0904/app/infrastructure/db/sqlc/dbgen"
+	errDomain "github.com/onion0904/CarShareSystem/app/domain/error"
+    "github.com/onion0904/CarShareSystem/app/domain/group"
+	"github.com/onion0904/CarShareSystem/app/infrastructure/db"
+	dbgen "github.com/onion0904/CarShareSystem/app/infrastructure/db/sqlc/dbgen"
 )
 
 type groupRepository struct {

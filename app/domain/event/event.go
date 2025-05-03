@@ -1,9 +1,9 @@
 package event
 
 import (
-	errDomain "github.com/onion0904/app/domain/error"
-	pkgTime "github.com/onion0904/go-pkg/time"
-	"github.com/onion0904/go-pkg/ulid"
+	errDomain "github.com/onion0904/CarShareSystem/app/domain/error"
+	pkgTime "github.com/onion0904/CarShareSystem/pkg/time"
+	"github.com/onion0904/CarShareSystem/pkg/ulid"
 	"time"
 	"unicode/utf8"
 )

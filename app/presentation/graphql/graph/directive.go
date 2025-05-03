@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/onion0904/app/middleware"
+	"github.com/onion0904/CarShareSystem/app/middleware"
 )
 
 var Directive DirectiveRoot = DirectiveRoot{

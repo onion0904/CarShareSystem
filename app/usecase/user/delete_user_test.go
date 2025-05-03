@@ -6,8 +6,8 @@ import (
 
 	"go.uber.org/mock/gomock"
 
-	userDomain "github.com/onion0904/app/domain/user"
-	errDomain "github.com/onion0904/app/domain/error"
+	userDomain "github.com/onion0904/CarShareSystem/app/domain/user"
+	errDomain "github.com/onion0904/CarShareSystem/app/domain/error"
 )
 
 func TestDeleteUseCase_Run(t *testing.T) {

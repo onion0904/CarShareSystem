@@ -4,19 +4,11 @@ FROM golang:1.24.2 AS builder
 # 作業ディレクトリを設定
 WORKDIR /workspace
 
-# go.work とあれば go.work.sum をコピー
-COPY go.work* ./
-
 # モジュールディレクトリを丸ごとコピー
-COPY app   ./app
-COPY pkg   ./pkg
-
-# ワークスペース全体の依存を同期
-RUN go work sync
+COPY .  .
 
 # app モジュールをビルド
-WORKDIR /workspace/app
-RUN go build -o /usr/local/bin/app-server cmd/server/main.go
+RUN go build -o /usr/local/bin/app-server app/cmd/server/main.go
 
 # 実行ステージ
 FROM golang:1.24.2 AS runner

@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"sync"
-	mailDomain "github.com/onion0904/app/domain/mail"
+	mailDomain "github.com/onion0904/CarShareSystem/app/domain/mail"
 )
 
 type SendEmailUseCase struct {

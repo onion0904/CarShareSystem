@@ -5,8 +5,8 @@ import (
     "fmt"
     "time"
     "github.com/mailgun/mailgun-go/v4"
-    mailDomain "github.com/onion0904/app/domain/mail"
-    "github.com/onion0904/app/config"
+    mailDomain "github.com/onion0904/CarShareSystem/app/domain/mail"
+    "github.com/onion0904/CarShareSystem/app/config"
 )
 
 type mailService struct {}
