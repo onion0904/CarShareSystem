@@ -42,7 +42,6 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}      # DBユーザーパスワード
       DB_NAME: ${DB_NAME}              # 使用するデータベース名
       ROOTPASS: ${ROOTPASS}              # DBのルートパスワード
-      ENV_PATH: ${ENV_PATH}            # 環境変数のパス
       SERVER_PORT: ${SERVER_PORT}        # サーバーポート
       MAILGUN_DOMAIN: ${MAILGUN_DOMAIN}  # Mailgunのドメイン
       MAILGUN_PRIVATE_API_KEY: ${MAILGUN_PRIVATE_API_KEY} # MailgunのAPIキー
