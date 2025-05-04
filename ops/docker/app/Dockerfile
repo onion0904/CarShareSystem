@@ -1,9 +1,8 @@
 # Builder stage
-FROM golang:1.24.2 AS builder
+FROM golang:1.24.2-alpine AS builder
 
 # gitをインストール
 RUN apt-get update && apt-get install -y git
-
 
 # 作業ディレクトリを設定
 WORKDIR /workspace
@@ -11,11 +10,15 @@ WORKDIR /workspace
 # モジュールディレクトリを丸ごとコピー
 COPY .  .
 
+# 依存関係を取得
+RUN go mod download
+
 # app モジュールをビルド
 RUN go build -o /usr/local/bin/app-server app/cmd/server/main.go
 
 # 実行ステージ
-FROM golang:1.24.2 AS runner
+FROM golang:1.24.2-alpine AS runner
+
 # 作業ディレクトリを設定
 WORKDIR /app
 
