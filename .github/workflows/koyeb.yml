@@ -37,6 +37,7 @@ jobs:
           privileged: true
           service-instance-type: free
           service-regions: was
+          service-min-instances: 0
           environment-variables: |
             DB_USER=${{ secrets.DB_USER }}
             DB_PORT=${{ secrets.DB_PORT }}
