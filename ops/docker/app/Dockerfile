@@ -1,8 +1,7 @@
 # Builder stage
 FROM golang:1.24.2-alpine AS builder
 
-# gitをインストール
-RUN apk update && apk add --no-cache git
+
 
 # 作業ディレクトリを設定
 WORKDIR /workspace
