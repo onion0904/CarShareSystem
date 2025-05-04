@@ -10,11 +10,15 @@ WORKDIR /workspace
 # モジュールディレクトリを丸ごとコピー
 COPY .  .
 
+RUN ls -la && find . -type f -name "*.go" | grep -v vendor
+
 # 依存関係を取得
 RUN go mod download
 
+RUN pwd && ls -la
+
 # app モジュールをビルド
-RUN go build -buildvcs=false -o /usr/local/bin/app-server app/cmd/server/main.go
+RUN go build -buildvcs=false -o /usr/local/bin/app-server ./app/cmd/server/main.go
 # 実行ステージ
 FROM golang:1.24.2-alpine AS runner
 
