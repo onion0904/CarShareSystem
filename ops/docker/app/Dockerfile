@@ -1,6 +1,10 @@
 # Builder stage
 FROM golang:1.24.2 AS builder
 
+# gitをインストール
+RUN apt-get update && apt-get install -y git
+
+
 # 作業ディレクトリを設定
 WORKDIR /workspace
 
