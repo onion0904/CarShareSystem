@@ -2,4 +2,5 @@
 FROM koyeb/docker-compose
 COPY . /app
 WORKDIR /app
+RUN apk add --no-cache git
 CMD ["docker-compose", "up"]

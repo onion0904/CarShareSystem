@@ -4,8 +4,6 @@ FROM golang:1.24.2-alpine AS builder
 # gitをインストール
 RUN apk add --no-cache git
 
-ENV BUILDX_GIT_INFO=false
-
 # 作業ディレクトリを設定
 WORKDIR /workspace
 
