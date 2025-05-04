@@ -1,6 +1,7 @@
 # CarShareSystem
 
-# local用リポジトリです。[public用](https://github.com/onion0904/carshare-backend)
+# local用リポジトリです。
+[public用はこちら](https://github.com/onion0904/carshare-backend)
 
 # 説明
 このアプリは知り合い同士で車をシェアするアプリのAPIです。
