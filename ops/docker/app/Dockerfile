@@ -2,7 +2,7 @@
 FROM golang:1.24.2-alpine AS builder
 
 # gitをインストール
-RUN sudo apt-get install git
+RUN apk add --no-cache git
 
 ENV BUILDX_GIT_INFO=false
 
