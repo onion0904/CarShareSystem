@@ -14,8 +14,7 @@ COPY .  .
 RUN go mod download
 
 # app モジュールをビルド
-RUN go build -o /usr/local/bin/app-server app/cmd/server/main.go
-
+RUN go build -buildvcs=false -o /usr/local/bin/app-server app/cmd/server/main.go
 # 実行ステージ
 FROM golang:1.24.2-alpine AS runner
 
