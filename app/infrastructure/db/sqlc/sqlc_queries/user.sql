@@ -7,7 +7,7 @@ INSERT INTO
         email,
         icon,
         created_at,
-        updated_at
+        updated_atz
     )
 VALUES
     (
